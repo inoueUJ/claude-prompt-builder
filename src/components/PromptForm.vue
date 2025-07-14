@@ -32,15 +32,15 @@ const getFieldValue = (field: keyof PromptFormData) => {
 // フィールドをグループ別に分類
 const groupedFields = computed(() => {
   const groups: Record<string, FormField[]> = {}
-  
-  props.fields.forEach(field => {
+
+  props.fields.forEach((field) => {
     const groupName = field.group || 'default'
     if (!groups[groupName]) {
       groups[groupName] = []
     }
     groups[groupName].push(field)
   })
-  
+
   return groups
 })
 
@@ -60,19 +60,12 @@ const autoResize = (event: Event) => {
     </h2>
 
     <div class="form-content">
-      <div 
-        v-for="(groupFields, groupName) in groupedFields" 
-        :key="groupName"
-        class="form-group"
-      >
+      <div v-for="(groupFields, groupName) in groupedFields" :key="groupName" class="form-group">
         <!-- グループヘッダー -->
-        <h3 
-          v-if="groupName !== 'default'" 
-          class="group-header"
-        >
+        <h3 v-if="groupName !== 'default'" class="group-header">
           {{ groupName }}
         </h3>
-        
+
         <!-- フィールド群 -->
         <div class="field-container">
           <div v-for="field in groupFields" :key="field.key" class="field-wrapper">
@@ -80,17 +73,22 @@ const autoResize = (event: Event) => {
               {{ field.label }}
               <span v-if="field.required" class="required-indicator">*</span>
             </label>
-            
+
             <textarea
               v-if="field.type === 'textarea'"
               :value="getFieldValue(field.key)"
-              @input="updateField(field.key, ($event.target as HTMLTextAreaElement).value); autoResize($event)"
+              @input="
+                (e) => {
+                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
+                  autoResize(e)
+                }
+              "
               @keydown.enter.stop
               :placeholder="field.placeholder"
               class="form-textarea auto-resize"
               rows="3"
             />
-            
+
             <input
               v-else
               type="text"
@@ -202,6 +200,11 @@ const autoResize = (event: Event) => {
   min-height: 80px;
   font-family: inherit;
   line-height: 1.5;
+}
+
+.form-textarea:placeholder-shown {
+  overflow-y: auto;
+  height: 120px;
 }
 
 .form-textarea:focus {

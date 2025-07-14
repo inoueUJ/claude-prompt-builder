@@ -13,15 +13,7 @@ import TabNavigation from '@/components/TabNavigation.vue'
             <span class="app-icon">🤖</span>
             Claude Prompt Builder
           </h1>
-          <p class="app-description">
-            XMLタグを自動生成して、より効果的なプロンプトを作成
-          </p>
-        </div>
-        
-        <!-- バージョン情報 -->
-        <div class="version-info">
-          <div class="version-number">Version 1.0.0</div>
-          <div class="tech-stack">Built with Vue 3 + TypeScript</div>
+          <p class="app-description visually-hidden">XMLタグを自動生成して、より効果的なプロンプトを作成</p>
         </div>
       </div>
     </header>
@@ -30,32 +22,28 @@ import TabNavigation from '@/components/TabNavigation.vue'
     <main class="main-content">
       <!-- タブナビゲーション -->
       <TabNavigation />
-      
-      <!-- 現在のページコンテンツ -->
-      <RouterView />
+
+      <!-- 現在のページコンテンツ（高さ制限付き） -->
+      <div class="content-area">
+        <RouterView />
+      </div>
     </main>
 
     <!-- フッター -->
     <footer class="app-footer">
       <div class="footer-content">
         <div class="footer-info">
-          © 2025 Claude Prompt Builder. 効果的なプロンプト作成をサポート
+          © 2025 Claude Prompt Builder
         </div>
         <div class="footer-links">
-          <a 
-            href="https://docs.anthropic.com/ja/docs/build-with-claude/prompt-engineering/overview" 
+          <a
+            href="https://docs.anthropic.com/ja/docs/build-with-claude/prompt-engineering/overview"
             target="_blank"
             class="footer-link"
           >
-            📚 Anthropic公式ドキュメント
+            公式ドキュメント
           </a>
-          <a 
-            href="https://github.com" 
-            target="_blank"
-            class="footer-link"
-          >
-            💻 GitHub
-          </a>
+          <a href="https://github.com" target="_blank" class="footer-link">GitHub</a>
         </div>
       </div>
     </footer>
@@ -63,102 +51,106 @@ import TabNavigation from '@/components/TabNavigation.vue'
 </template>
 
 <style scoped>
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 .app-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f3f4f6;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
 }
 
 .app-header {
   background: white;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
 }
 
 .header-content {
   max-width: 1536px;
   margin: 0 auto;
-  padding: 20px 24px;
+  padding: 6px 20px; /* 上下パディングを極限まで縮小 */
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.header-info {
-  flex: 1;
-}
-
 .app-title {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 1.25rem; /* フォントサイズをさらに縮小 */
+  font-weight: 600;
   color: #1f2937;
-  margin: 0 0 8px 0;
+  margin: 0;
   display: flex;
   align-items: center;
 }
 
 .app-icon {
-  margin-right: 12px;
-  font-size: 2.5rem;
-}
-
-.app-description {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-  line-height: 1.5;
-}
-
-.version-info {
-  text-align: right;
-}
-
-.version-number {
-  font-size: 0.75rem;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.tech-stack {
-  font-size: 0.75rem;
-  color: #9ca3af;
+  margin-right: 8px;
+  font-size: 1.6rem; /* アイコンサイズをさらに縮小 */
 }
 
 .main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   max-width: 1536px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 12px 16px 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.content-area {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .app-footer {
-  background: white;
+  background: #f9fafb;
   border-top: 1px solid #e5e7eb;
-  margin-top: 48px;
+  flex-shrink: 0;
 }
 
 .footer-content {
   max-width: 1536px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 12px 20px; /* パディングを縮小 */
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
 }
 
 .footer-info {
-  font-size: 0.875rem;
+  font-size: 0.75rem; /* フォントサイズを縮小 */
   color: #6b7280;
-  text-align: center;
 }
 
 .footer-links {
   display: flex;
-  gap: 24px;
+  gap: 16px; /* ギャップを縮小 */
 }
 
 .footer-link {
-  font-size: 0.875rem;
+  font-size: 0.75rem; /* フォントサイズを縮小 */
   color: #3b82f6;
   text-decoration: none;
   transition: color 0.2s ease;
@@ -168,38 +160,27 @@ import TabNavigation from '@/components/TabNavigation.vue'
   color: #1d4ed8;
 }
 
-/* レスポンシブ対応 */
-@media (min-width: 768px) {
-  .footer-content {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-}
-
 @media (max-width: 768px) {
   .header-content {
-    flex-direction: column;
-    gap: 16px;
-    text-align: center;
+    padding: 8px 16px;
   }
-  
-  .version-info {
-    text-align: center;
-  }
-  
+
   .app-title {
-    font-size: 1.75rem;
-    justify-content: center;
+    font-size: 1.1rem;
   }
-  
+
+  .app-icon {
+    font-size: 1.5rem;
+  }
+
   .main-content {
-    padding: 24px 16px;
+    padding: 8px 12px 0;
   }
-  
-  .footer-links {
+
+  .footer-content {
     flex-direction: column;
-    gap: 12px;
-    text-align: center;
+    gap: 8px;
+    padding: 10px;
   }
 }
 </style>

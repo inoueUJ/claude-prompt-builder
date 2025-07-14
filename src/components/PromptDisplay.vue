@@ -43,10 +43,10 @@ const handleReset = () => {
 
     <!-- プロンプト表示エリア -->
     <div class="prompt-content">
-      <textarea 
-        v-if="promptStore.generatedPrompt" 
-        :value="promptStore.generatedPrompt" 
-        readonly 
+      <textarea
+        v-if="promptStore.generatedPrompt"
+        :value="promptStore.generatedPrompt"
+        readonly
         class="prompt-textarea"
         rows="15"
         placeholder="生成されたプロンプトがここに表示されます"
@@ -57,19 +57,6 @@ const handleReset = () => {
           ↑ 上のフォームに入力すると、<br />
           XMLタグ付きプロンプトが自動生成されます
         </p>
-      </div>
-    </div>
-
-    <!-- 使用方法 -->
-    <div class="usage-guide">
-      <h4 class="usage-title">
-        <span class="usage-icon">💡</span>
-        使用方法
-      </h4>
-      <div class="usage-content">
-        <div class="usage-step">1. 必要なフィールドを入力（改行もサポート）</div>
-        <div class="usage-step">2. 「コピー」ボタンでプロンプトをコピー</div>
-        <div class="usage-step">3. ClaudeのチャットにペーストしてEnter</div>
       </div>
     </div>
 
@@ -129,7 +116,7 @@ const handleReset = () => {
   border-radius: 12px;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   padding: 24px;
-  height: fit-content;
+  height: 100%; /* 高さを100%に変更 */
   display: flex;
   flex-direction: column;
 }
@@ -208,7 +195,7 @@ const handleReset = () => {
   width: 100%;
   height: 100%;
   min-height: 300px;
-  max-height: 500px;
+  /* max-height: 500px; */ /* 最大の高さを削除 */
   font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
   font-size: 0.875rem;
   line-height: 1.6;

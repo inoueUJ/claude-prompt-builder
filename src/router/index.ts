@@ -10,7 +10,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/business',
     name: 'business',
-    component: () => import('@/views/BusinessAnalysisView.vue'),
+    component: () => import('@/views/PromptBuilderView.vue'),
     meta: {
       title: 'ビジネス分析・戦略',
       icon: '📊',
@@ -20,7 +20,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/writing',
     name: 'writing',
-    component: () => import('@/views/WritingView.vue'),
+    component: () => import('@/views/PromptBuilderView.vue'),
     meta: {
       title: '文章・コンテンツ作成',
       icon: '✍️',
@@ -30,7 +30,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/tech',
     name: 'tech',
-    component: () => import('@/views/TechnicalView.vue'),
+    component: () => import('@/views/PromptBuilderView.vue'),
     meta: {
       title: '技術・プログラミング',
       icon: '💻',
@@ -40,7 +40,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/education',
     name: 'education',
-    component: () => import('@/views/EducationView.vue'),
+    component: () => import('@/views/PromptBuilderView.vue'),
     meta: {
       title: '教育・説明',
       icon: '🎓',
@@ -50,7 +50,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/creative',
     name: 'creative',
-    component: () => import('@/views/CreativeView.vue'),
+    component: () => import('@/views/PromptBuilderView.vue'),
     meta: {
       title: 'クリエイティブ・企画',
       icon: '🎨',
@@ -60,7 +60,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/decision',
     name: 'decision',
-    component: () => import('@/views/DecisionView.vue'),
+    component: () => import('@/views/PromptBuilderView.vue'),
     meta: {
       title: '意思決定・評価',
       icon: '⚖️',
