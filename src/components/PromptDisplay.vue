@@ -116,9 +116,9 @@ const handleReset = () => {
   border-radius: 12px;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   padding: 24px;
-  height: 100%; /* 高さを100%に変更 */
   display: flex;
   flex-direction: column;
+  box-sizing: border-box; /* 追加 */
 }
 
 .prompt-header {
@@ -299,5 +299,62 @@ const handleReset = () => {
   font-size: 0.75rem;
   color: #059669;
   margin: 0;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .prompt-display {
+    padding: 16px;
+  }
+
+  .prompt-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prompt-title {
+    font-size: 1.1rem;
+  }
+
+  .prompt-actions {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .btn {
+    flex-grow: 1; /* ボタンの幅を均等に広げる */
+    justify-content: center; /* ボタン内のテキストとアイコンを中央揃え */
+    padding: 12px 10px;
+    font-size: 0.8rem;
+  }
+
+  .prompt-content {
+    padding: 16px;
+    min-height: 250px;
+  }
+
+  .prompt-textarea {
+    font-size: 0.8rem;
+  }
+
+  .quality-indicator {
+    padding: 12px;
+  }
+
+  .quality-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .quality-label {
+    font-size: 0.8rem;
+  }
+
+  .quality-description {
+    font-size: 0.7rem;
+  }
 }
 </style>
