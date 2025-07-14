@@ -56,6 +56,67 @@ export interface PromptFormData {
   weightings: string
   risk_factors: string
   decision_deadline: string
+
+  // === 新カテゴリ専用フィールド ===
+
+  // コードレビュー・品質向上
+  code_target: string
+  review_focus: string
+  coding_standards: string
+  team_context: string
+
+  // システム設計・アーキテクチャ
+  system_requirements: string
+  technology_stack: string
+  scalability_needs: string
+  security_architecture: string
+  integration_requirements: string
+  operational_requirements: string
+
+  // 学習・技術調査
+  learning_target: string
+  current_skill_level: string
+  learning_goals: string
+  time_constraints: string
+  practical_application: string
+
+  // 開発プロセス改善
+  current_process: string
+  pain_points: string
+  team_structure: string
+  technology_environment: string
+  quality_metrics: string
+  business_requirements: string
+
+  // トラブルシューティング・デバッグ
+  problem_description: string
+  error_logs: string
+  system_environment: string
+  recent_changes: string
+  monitoring_data: string
+  business_impact: string
+
+  // プロダクト改善・UX最適化
+  current_metrics: string
+  user_pain_points: string
+  target_users: string
+  competitive_analysis: string
+  technical_constraints: string
+  business_goals: string
+
+  // AI・プロンプトエンジニアリング
+  ai_model_target: string
+  prompt_objectives: string
+  output_structure: string
+  edge_cases: string
+
+  // ツール・ユーティリティ開発
+  tool_purpose: string
+  target_workflows: string
+  user_personas: string
+  technical_stack: string
+  integration_needs: string
+  usability_requirements: string
 }
 
 export const usePromptStore = defineStore('prompt', () => {
@@ -115,7 +176,68 @@ export const usePromptStore = defineStore('prompt', () => {
     evaluation_criteria_decision: '',
     weightings: '',
     risk_factors: '',
-    decision_deadline: ''
+    decision_deadline: '',
+
+    // === 新カテゴリ専用フィールド ===
+
+    // コードレビュー・品質向上
+    code_target: '',
+    review_focus: '',
+    coding_standards: '',
+    team_context: '',
+
+    // システム設計・アーキテクチャ
+    system_requirements: '',
+    technology_stack: '',
+    scalability_needs: '',
+    security_architecture: '',
+    integration_requirements: '',
+    operational_requirements: '',
+
+    // 学習・技術調査
+    learning_target: '',
+    current_skill_level: '',
+    learning_goals: '',
+    time_constraints: '',
+    practical_application: '',
+
+    // 開発プロセス改善
+    current_process: '',
+    pain_points: '',
+    team_structure: '',
+    technology_environment: '',
+    quality_metrics: '',
+    business_requirements: '',
+
+    // トラブルシューティング・デバッグ
+    problem_description: '',
+    error_logs: '',
+    system_environment: '',
+    recent_changes: '',
+    monitoring_data: '',
+    business_impact: '',
+
+    // プロダクト改善・UX最適化
+    current_metrics: '',
+    user_pain_points: '',
+    target_users: '',
+    competitive_analysis: '',
+    technical_constraints: '',
+    business_goals: '',
+
+    // AI・プロンプトエンジニアリング
+    ai_model_target: '',
+    prompt_objectives: '',
+    output_structure: '',
+    edge_cases: '',
+
+    // ツール・ユーティリティ開発
+    tool_purpose: '',
+    target_workflows: '',
+    user_personas: '',
+    technical_stack: '',
+    integration_needs: '',
+    usability_requirements: ''
   })
 
   // Getters
@@ -175,7 +297,68 @@ export const usePromptStore = defineStore('prompt', () => {
       evaluation_criteria_decision: 'evaluation_criteria',
       weightings: 'weightings',
       risk_factors: 'risk_factors',
-      decision_deadline: 'decision_deadline'
+      decision_deadline: 'decision_deadline',
+
+      // === 新カテゴリ専用フィールド ===
+
+      // コードレビュー・品質向上
+      code_target: 'code_target',
+      review_focus: 'review_focus',
+      coding_standards: 'coding_standards',
+      team_context: 'team_context',
+
+      // システム設計・アーキテクチャ
+      system_requirements: 'system_requirements',
+      technology_stack: 'technology_stack',
+      scalability_needs: 'scalability_needs',
+      security_architecture: 'security_architecture',
+      integration_requirements: 'integration_requirements',
+      operational_requirements: 'operational_requirements',
+
+      // 学習・技術調査
+      learning_target: 'learning_target',
+      current_skill_level: 'current_skill_level',
+      learning_goals: 'learning_goals',
+      time_constraints: 'time_constraints',
+      practical_application: 'practical_application',
+
+      // 開発プロセス改善
+      current_process: 'current_process',
+      pain_points: 'pain_points',
+      team_structure: 'team_structure',
+      technology_environment: 'technology_environment',
+      quality_metrics: 'quality_metrics',
+      business_requirements: 'business_requirements',
+
+      // トラブルシューティング・デバッグ
+      problem_description: 'problem_description',
+      error_logs: 'error_logs',
+      system_environment: 'system_environment',
+      recent_changes: 'recent_changes',
+      monitoring_data: 'monitoring_data',
+      business_impact: 'business_impact',
+
+      // プロダクト改善・UX最適化
+      current_metrics: 'current_metrics',
+      user_pain_points: 'user_pain_points',
+      target_users: 'target_users',
+      competitive_analysis: 'competitive_analysis',
+      technical_constraints: 'technical_constraints',
+      business_goals: 'business_goals',
+
+      // AI・プロンプトエンジニアリング
+      ai_model_target: 'ai_model_target',
+      prompt_objectives: 'prompt_objectives',
+      output_structure: 'output_structure',
+      edge_cases: 'edge_cases',
+
+      // ツール・ユーティリティ開発
+      tool_purpose: 'tool_purpose',
+      target_workflows: 'target_workflows',
+      user_personas: 'user_personas',
+      technical_stack: 'technical_stack',
+      integration_needs: 'integration_needs',
+      usability_requirements: 'usability_requirements'
     }
 
     // XMLプロンプト生成（改行を保持）
