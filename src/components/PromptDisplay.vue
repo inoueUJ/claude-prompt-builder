@@ -116,9 +116,17 @@ const handleReset = () => {
   border-radius: 12px;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   padding: 24px;
+  height: fit-content; /* デフォルトの高さをコンテンツに合わせる */
   display: flex;
   flex-direction: column;
-  box-sizing: border-box; /* 追加 */
+  box-sizing: border-box;
+}
+
+/* PC表示では高さを100%にする */
+@media (min-width: 768px) {
+  .prompt-display {
+    height: 100%;
+  }
 }
 
 .prompt-header {
