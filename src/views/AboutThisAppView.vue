@@ -868,33 +868,59 @@ onMounted(() => {
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .container {
+    max-width: 90%;
+    padding: 0 1.5rem;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 1rem;
+    border-radius: 0;
+  }
+
+  .header {
+    padding: 2.5rem 1rem;
+    margin: 0 -1rem 2rem -1rem;
   }
 
   .header h1 {
     font-size: 2rem;
   }
 
+  .subtitle {
+    font-size: 1.1rem;
+  }
+
   .comparison-examples {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 
   .toc {
-    padding: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
   }
 
   .section {
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
   }
 
   .section h2 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
 
   .subsection h3 {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
+  }
+
+  .comparison-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
   }
 }
 
@@ -911,14 +937,32 @@ onMounted(() => {
     font-size: 1rem;
   }
 
+  .section h2 {
+    font-size: 1.5rem;
+  }
+
+  .subsection h3 {
+    font-size: 1.2rem;
+  }
+
   .code-block {
     padding: 1rem;
+  }
+
+  .code-block code {
+    font-size: 0.85rem;
   }
 
   .comparison-table th,
   .comparison-table td {
     padding: 0.75rem;
     font-size: 0.9rem;
+  }
+
+  .highlight-box,
+  .references,
+  .example {
+    padding: 1rem;
   }
 }
 </style>
