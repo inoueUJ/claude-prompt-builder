@@ -148,6 +148,16 @@ const routes: RouteRecordRaw[] = [
       description: 'CLI作成、自動化ツール、業務効率化スクリプト',
     },
   },
+  {
+    path: '/about-this-app',
+    name: 'about-this-app',
+    component: () => import('@/views/AboutThisAppView.vue'),
+    meta: {
+      title: 'このアプリについて',
+      icon: '📱',
+      description: 'このアプリケーションについての詳細情報',
+    },
+  },
 ]
 
 const router = createRouter({

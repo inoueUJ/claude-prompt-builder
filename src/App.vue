@@ -44,6 +44,7 @@ import TabNavigation from '@/components/TabNavigation.vue'
             公式ドキュメント
           </a>
           <a href="https://github.com" target="_blank" class="footer-link">GitHub</a>
+          <router-link to="/about-this-app" class="footer-link">このアプリについて</router-link>
         </div>
       </div>
     </footer>
@@ -120,7 +121,7 @@ import TabNavigation from '@/components/TabNavigation.vue'
 
 .content-area {
   flex: 1;
-  overflow: hidden;
+  overflow-y: auto; /* 垂直方向のスクロールを有効にする */
   min-height: 0;
 }
 
