@@ -10,16 +10,12 @@ export interface FormField {
 }
 
 export interface PromptConfig {
-  title: string
-  icon: string
   fields: FormField[]
 }
 
 export const promptConfigs: Record<string, PromptConfig> = {
   // ビジネス戦略・意思決定
   business: {
-    title: 'ビジネス戦略・意思決定',
-    icon: '📊',
     fields: [
       // 基本設定グループ
       {
@@ -118,8 +114,6 @@ export const promptConfigs: Record<string, PromptConfig> = {
 
   // 文章・コンテンツ作成
   writing: {
-    title: '文章・コンテンツ作成',
-    icon: '✍️',
     fields: [
       {
         key: 'role',
@@ -208,8 +202,6 @@ AI搭載の業務効率化ツールを開発
 
   // 技術開発・実装
   tech: {
-    title: '技術開発・実装',
-    icon: '💻',
     fields: [
       {
         key: 'role',
@@ -307,8 +299,6 @@ AI搭載の業務効率化ツールを開発
 
   // 教育・説明
   education: {
-    title: '教育・説明',
-    icon: '🎓',
     fields: [
       {
         key: 'role',
@@ -392,8 +382,6 @@ AI搭載の業務効率化ツールを開発
 
   // クリエイティブ・企画
   creative: {
-    title: 'クリエイティブ・企画',
-    icon: '🎨',
     fields: [
       {
         key: 'role',
@@ -480,8 +468,6 @@ AI搭載の業務効率化ツールを開発
   // 以下、簡略化して主要なフィールドのみ定義
 
   code_review: {
-    title: 'コードレビュー',
-    icon: '🔍',
     fields: [
       { key: 'role', label: '役割', placeholder: 'シニアソフトウェアエンジニア（コードレビュー専門）', type: 'text', required: true, group: '🎭 基本設定' },
       { key: 'context', label: '背景・状況', placeholder: 'チーム開発、品質改善、新人教育', type: 'textarea', group: '🎭 基本設定' },
@@ -495,8 +481,6 @@ AI搭載の業務効率化ツールを開発
   },
 
   system_design: {
-    title: 'システム設計',
-    icon: '🏗️',
     fields: [
       { key: 'role', label: '役割', placeholder: 'ソリューションアーキテクト（大規模システム設計専門）', type: 'text', required: true, group: '🎭 基本設定' },
       { key: 'context', label: '背景・状況', placeholder: '大規模システム、マイクロサービス化', type: 'textarea', group: '🎭 基本設定' },
@@ -511,8 +495,6 @@ AI搭載の業務効率化ツールを開発
   },
 
   learning: {
-    title: '学習・技術調査',
-    icon: '📚',
     fields: [
       { key: 'role', label: '役割', placeholder: 'テックリード兼メンター（技術調査専門）', type: 'text', required: true, group: '🎭 基本設定' },
       { key: 'context', label: '背景・状況', placeholder: 'チーム学習、新技術評価', type: 'textarea', group: '🎭 基本設定' },
@@ -527,8 +509,6 @@ AI搭載の業務効率化ツールを開発
 
   // 残りのカテゴリーも同様に追加...
   decision: {
-    title: '意思決定・評価',
-    icon: '⚖️',
     fields: [
       { key: 'role', label: '役割', placeholder: '意思決定分析家', type: 'text', required: true, group: '🎭 基本設定' },
       { key: 'context', label: '背景・状況', placeholder: '複数の選択肢、複雑な要因', type: 'textarea', group: '🎭 基本設定' },
@@ -539,8 +519,6 @@ AI搭載の業務効率化ツールを開発
     ],
   },
   dev_process: {
-    title: 'プロセス改善',
-    icon: '⚡',
     fields: [
       { key: 'role', label: '役割', placeholder: 'DevOpsエンジニア（プロセス改善専門）', type: 'text', required: true, group: '🎭 基本設定' },
       { key: 'context', label: '背景・状況', placeholder: '開発プロセス、生産性向上', type: 'textarea', group: '🎭 基本設定' },
@@ -552,8 +530,6 @@ AI搭載の業務効率化ツールを開発
   },
 
   troubleshooting: {
-    title: 'トラブルシューティング',
-    icon: '🐛',
     fields: [
       { key: 'role', label: '役割', placeholder: 'シニアデバッグエンジニア（障害対応専門）', type: 'text', required: true, group: '🎭 基本設定' },
       { key: 'context', label: '背景・状況', placeholder: '本番障害、緊急対応', type: 'textarea', group: '🎭 基本設定' },
@@ -566,8 +542,6 @@ AI搭載の業務効率化ツールを開発
   },
 
   ux_optimization: {
-    title: 'UX最適化',
-    icon: '🎨',
     fields: [
       { key: 'role', label: '役割', placeholder: 'UXデザイナー（ユーザビリティ改善専門）', type: 'text', required: true, group: '🎭 基本設定' },
       { key: 'context', label: '背景・状況', placeholder: 'ECサイト、コンバージョン率改善', type: 'textarea', group: '🎭 基本設定' },
@@ -580,8 +554,6 @@ AI搭載の業務効率化ツールを開発
   },
 
   ai_prompt: {
-    title: 'AIプロンプト',
-    icon: '🤖',
     fields: [
       { key: 'role', label: '役割', placeholder: 'AIプロンプトエンジニア（LLM最適化専門）', type: 'text', required: true, group: '🎭 基本設定' },
       { key: 'context', label: '背景・状況', placeholder: 'プロンプト設計、AI活用', type: 'textarea', group: '🎭 基本設定' },
@@ -593,8 +565,6 @@ AI搭載の業務効率化ツールを開発
     ],
   },
   tool_development: {
-    title: 'ツール・ユーティリティ開発',
-    icon: '🔧',
     fields: [
         { key: 'role', label: '役割', placeholder: 'ソフトウェアエンジニア', type: 'text', required: true, group: '🎭 基本設定' },
         { key: 'context', label: '背景・状況', placeholder: '開発効率化、手作業の自動化', type: 'textarea', group: '🎭 基本設定' },
@@ -605,8 +575,6 @@ AI搭載の業務効率化ツールを開発
     ],
   },
   data_analysis: {
-    title: 'データ分析・可視化',
-    icon: '📊',
     fields: [
       { key: 'role', label: '役割', placeholder: 'データサイエンティスト（分析・可視化専門）', type: 'text', required: true, group: '🎭 基本設定' },
       { key: 'context', label: '背景・状況', placeholder: 'データ分析、ビジネス洞察', type: 'textarea', group: '🎭 基本設定' },

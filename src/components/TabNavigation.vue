@@ -1,96 +1,18 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { promptRoutes } from '@/router'
 
 const router = useRouter()
 const route = useRoute()
 
-const tabs = [
-  {
-    id: 'business',
-    icon: '📊',
-    label: 'ビジネス分析',
-    description: '市場分析・競合調査',
-  },
-  {
-    id: 'writing',
-    icon: '✍️',
-    label: '文章作成',
-    description: '記事・メール・提案書',
-  },
-  {
-    id: 'tech',
-    icon: '💻',
-    label: '技術',
-    description: 'コード・技術文書',
-  },
-  {
-    id: 'education',
-    icon: '🎓',
-    label: '教育・説明',
-    description: '解説・チュートリアル',
-  },
-  {
-    id: 'creative',
-    icon: '🎨',
-    label: 'クリエイティブ',
-    description: '企画・アイデア発想',
-  },
-  {
-    id: 'decision',
-    icon: '⚖️',
-    label: '意思決定',
-    description: '選択肢比較・評価',
-  },
-  {
-    id: 'code_review',
-    icon: '🔍',
-    label: 'コードレビュー',
-    description: '品質向上・リファクタリング',
-  },
-  {
-    id: 'system_design',
-    icon: '🏗️',
-    label: 'システム設計',
-    description: 'アーキテクチャ・設計',
-  },
-  {
-    id: 'learning',
-    icon: '📚',
-    label: '学習・技術調査',
-    description: '新技術・スキルアップ',
-  },
-  {
-    id: 'dev_process',
-    icon: '⚡',
-    label: 'プロセス改善',
-    description: 'CI/CD・効率化',
-  },
-  {
-    id: 'troubleshooting',
-    icon: '🐛',
-    label: 'トラブルシューティング',
-    description: 'デバッグ・障害対応',
-  },
-  {
-    id: 'ux_optimization',
-    icon: '🎨',
-    label: 'UX最適化',
-    description: 'ユーザビリティ向上',
-  },
-  {
-    id: 'ai_prompt',
-    icon: '🤖',
-    label: 'AIプロンプト',
-    description: 'プロンプト設計・最適化',
-  },
-  {
-    id: 'tool_development',
-    icon: '🔧',
-    label: 'ツール開発',
-    description: 'ユーティリティ・自動化',
-  },
-]
+const tabs = computed(() =>
+  promptRoutes.map((r) => ({
+    id: r.name as string,
+    icon: r.meta?.icon || '',
+    label: r.meta?.label || (r.meta?.title as string) || (r.name as string),
+  }))
+)
 
 const currentTab = computed(() => route.name as string)
 
