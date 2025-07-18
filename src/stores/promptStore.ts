@@ -1,378 +1,238 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
+// === 改善版: 統合されたプロンプトフォーム構造 ===
 export interface PromptFormData {
-  // 共通フィールド
-  role: string
-  instructions: string
-  context: string
-  constraints: string
-  output_format: string
-  
-  // ビジネス分析特化
-  analysis_target: string
-  analysis_framework: string
-  data_sources: string
-  stakeholders: string
-  timeframe: string
-  budget_resources: string
-  
-  // 文章作成特化
-  target_audience: string
-  purpose: string
-  word_count: string
-  tone: string
-  structure: string
-  call_to_action: string
+  // === 6つの基本カテゴリー ===
+  role: string                    // 役割・背景
+  context: string                 // 背景・状況
+  goals: string                   // 目的・目標
+  constraints: string             // 制約・条件
+  thinking: string                // 思考・分析枠組み
+  instructions: string            // 具体的指示
+  references: string              // 参考・例
+  style: string                   // スタイル・トーン
+  output_format: string           // 出力形式
+  deliverables: string            // 成果物
 
-  // 技術特化
-  programming_language: string
-  framework: string
-  technical_requirements: string
-  environment: string
-  performance_requirements: string
-  security_requirements: string
+  // === 技術特化フィールド ===
+  tech_stack: string              // 技術スタック統合
 
-  // 教育特化
-  audience_level: string
-  learning_objectives: string
-  prerequisites: string
-  explanation_method: string
-  check_points: string
-  additional_resources: string
+  // === 特化情報統合フィールド ===
+  specialization: string          // カテゴリー特化情報
 
-  // クリエイティブ特化
-  creative_direction: string
-  target_demographic: string
-  brand_tone: string
-  creative_constraints: string
-  inspiration_sources: string
-  evaluation_criteria: string
+  // === メタ情報 ===
+  category: string                // 選択中のカテゴリー
+  template_type: string           // テンプレートタイプ
+}
 
-  // 意思決定特化
-  options: string
-  alternatives: string
-  evaluation_criteria_decision: string
-  weightings: string
-  risk_factors: string
-  decision_deadline: string
+// カテゴリー定義
+export const CATEGORIES = {
+  business: 'ビジネス戦略・意思決定',
+  writing: '文章校正',
+  tech: '技術開発・実装',
+  education: '教育・説明',
+  creative: 'クリエイティブ',
+  code_review: 'コードレビュー',
+  system_design: 'システム設計',
+  learning: '学習・技術調査',
+  process: 'プロセス改善',
+  troubleshooting: 'トラブルシューティング',
+  ux: 'UX最適化',
+  ai_prompt: 'AIプロンプト',
+  data_analysis: 'データ分析・可視化'
+} as const
 
-  // === 新カテゴリ専用フィールド ===
+export type CategoryKey = keyof typeof CATEGORIES
 
-  // コードレビュー・品質向上
-  code_target: string
-  review_focus: string
-  coding_standards: string
-  team_context: string
+// カテゴリー別特化タグ名マッピング
+const CATEGORY_SPECIALIZATION_TAGS: Record<CategoryKey, string> = {
+  business: 'business_analysis',
+  writing: 'writing_details',
+  tech: 'technical_details',
+  education: 'learning_design',
+  creative: 'creative_direction',
+  code_review: 'review_criteria',
+  system_design: 'architecture_details',
+  learning: 'learning_context',
+  process: 'process_details',
+  troubleshooting: 'problem_context',
+  ux: 'ux_requirements',
+  ai_prompt: 'prompt_design',
+  data_analysis: 'analysis_requirements'
+}
 
-  // システム設計・アーキテクチャ
-  system_requirements: string
-  technology_stack: string
-  scalability_needs: string
-  security_architecture: string
-  integration_requirements: string
-  operational_requirements: string
-
-  // 学習・技術調査
-  learning_target: string
-  current_skill_level: string
-  learning_goals: string
-  time_constraints: string
-  practical_application: string
-
-  // 開発プロセス改善
-  current_process: string
-  pain_points: string
-  team_structure: string
-  technology_environment: string
-  quality_metrics: string
-  business_requirements: string
-
-  // トラブルシューティング・デバッグ
-  problem_description: string
-  error_logs: string
-  system_environment: string
-  recent_changes: string
-  monitoring_data: string
-  business_impact: string
-
-  // プロダクト改善・UX最適化
-  current_metrics: string
-  user_pain_points: string
-  target_users: string
-  competitive_analysis: string
-  technical_constraints: string
-  business_goals: string
-
-  // AI・プロンプトエンジニアリング
-  ai_model_target: string
-  prompt_objectives: string
-  output_structure: string
-  edge_cases: string
-
-  // ツール・ユーティリティ開発
-  tool_purpose: string
-  target_workflows: string
-  user_personas: string
-  technical_stack: string
-  integration_needs: string
-  usability_requirements: string
+// カテゴリー別表示フィールド定義
+const CATEGORY_VISIBLE_FIELDS: Record<CategoryKey, string[]> = {
+  business: ['role', 'context', 'goals', 'thinking', 'instructions', 'references', 'output_format', 'deliverables'],
+  writing: ['role', 'context', 'goals', 'style', 'instructions', 'references', 'output_format'],
+  tech: ['role', 'context', 'goals', 'tech_stack', 'constraints', 'thinking', 'instructions', 'output_format', 'deliverables'],
+  education: ['role', 'context', 'goals', 'thinking', 'instructions', 'references', 'style', 'output_format'],
+  creative: ['role', 'context', 'goals', 'style', 'instructions', 'references', 'output_format', 'deliverables'],
+  code_review: ['role', 'context', 'goals', 'tech_stack', 'constraints', 'thinking', 'instructions', 'output_format'],
+  system_design: ['role', 'context', 'goals', 'tech_stack', 'constraints', 'thinking', 'instructions', 'output_format', 'deliverables'],
+  learning: ['role', 'context', 'goals', 'thinking', 'instructions', 'references', 'output_format'],
+  process: ['role', 'context', 'goals', 'constraints', 'thinking', 'instructions', 'output_format', 'deliverables'],
+  troubleshooting: ['role', 'context', 'goals', 'constraints', 'thinking', 'instructions', 'output_format'],
+  ux: ['role', 'context', 'goals', 'constraints', 'thinking', 'instructions', 'references', 'output_format', 'deliverables'],
+  ai_prompt: ['role', 'context', 'goals', 'thinking', 'instructions', 'references', 'output_format'],
+  data_analysis: ['role', 'context', 'goals', 'tech_stack', 'constraints', 'thinking', 'instructions', 'output_format', 'deliverables']
 }
 
 export const usePromptStore = defineStore('prompt', () => {
   // State
   const currentTab = ref<string>('business')
   const formData = ref<PromptFormData>({
-    // 共通フィールド
+    // 基本カテゴリー
     role: '',
-    instructions: '',
     context: '',
+    goals: '',
     constraints: '',
+    thinking: '',
+    instructions: '',
+    references: '',
+    style: '',
     output_format: '',
-    
-    // ビジネス分析特化
-    analysis_target: '',
-    analysis_framework: '',
-    data_sources: '',
-    stakeholders: '',
-    timeframe: '',
-    budget_resources: '',
-    
-    // 文章作成特化
-    target_audience: '',
-    purpose: '',
-    word_count: '',
-    tone: '',
-    structure: '',
-    call_to_action: '',
+    deliverables: '',
 
     // 技術特化
-    programming_language: '',
-    framework: '',
-    technical_requirements: '',
-    environment: '',
-    performance_requirements: '',
-    security_requirements: '',
+    tech_stack: '',
 
-    // 教育特化
-    audience_level: '',
-    learning_objectives: '',
-    prerequisites: '',
-    explanation_method: '',
-    check_points: '',
-    additional_resources: '',
+    // 特化情報統合
+    specialization: '',
 
-    // クリエイティブ特化
-    creative_direction: '',
-    target_demographic: '',
-    brand_tone: '',
-    creative_constraints: '',
-    inspiration_sources: '',
-    evaluation_criteria: '',
-
-    // 意思決定特化
-    options: '',
-    alternatives: '',
-    evaluation_criteria_decision: '',
-    weightings: '',
-    risk_factors: '',
-    decision_deadline: '',
-
-    // === 新カテゴリ専用フィールド ===
-
-    // コードレビュー・品質向上
-    code_target: '',
-    review_focus: '',
-    coding_standards: '',
-    team_context: '',
-
-    // システム設計・アーキテクチャ
-    system_requirements: '',
-    technology_stack: '',
-    scalability_needs: '',
-    security_architecture: '',
-    integration_requirements: '',
-    operational_requirements: '',
-
-    // 学習・技術調査
-    learning_target: '',
-    current_skill_level: '',
-    learning_goals: '',
-    time_constraints: '',
-    practical_application: '',
-
-    // 開発プロセス改善
-    current_process: '',
-    pain_points: '',
-    team_structure: '',
-    technology_environment: '',
-    quality_metrics: '',
-    business_requirements: '',
-
-    // トラブルシューティング・デバッグ
-    problem_description: '',
-    error_logs: '',
-    system_environment: '',
-    recent_changes: '',
-    monitoring_data: '',
-    business_impact: '',
-
-    // プロダクト改善・UX最適化
-    current_metrics: '',
-    user_pain_points: '',
-    target_users: '',
-    competitive_analysis: '',
-    technical_constraints: '',
-    business_goals: '',
-
-    // AI・プロンプトエンジニアリング
-    ai_model_target: '',
-    prompt_objectives: '',
-    output_structure: '',
-    edge_cases: '',
-
-    // ツール・ユーティリティ開発
-    tool_purpose: '',
-    target_workflows: '',
-    user_personas: '',
-    technical_stack: '',
-    integration_needs: '',
-    usability_requirements: ''
+    // メタ情報
+    category: 'business',
+    template_type: 'standard'
   })
 
   // Getters
   const generatedPrompt = computed(() => {
     let prompt = ''
-    const fieldMapping: Record<keyof PromptFormData, string> = {
-      // 共通フィールド
-      role: 'role',
-      instructions: 'instructions',
-      context: 'context',
-      constraints: 'constraints',
-      output_format: 'output_format',
-      
-      // ビジネス分析特化
-      analysis_target: 'analysis_target',
-      analysis_framework: 'analysis_framework',
-      data_sources: 'data_sources',
-      stakeholders: 'stakeholders',
-      timeframe: 'timeframe',
-      budget_resources: 'budget_resources',
-      
-      // 文章作成特化
-      target_audience: 'target_audience',
-      purpose: 'purpose',
-      word_count: 'word_count',
-      tone: 'tone',
-      structure: 'structure',
-      call_to_action: 'call_to_action',
+    const category = formData.value.category as CategoryKey
+    
+    // Constitutional AI原則に基づく出力順序
+    const outputOrder = [
+      'role',
+      'context', 
+      'goals',
+      'tech_stack',
+      'constraints',
+      'thinking',
+      'instructions',
+      'references',
+      'style',
+      'output_format',
+      'deliverables'
+    ]
 
-      // 技術特化
-      programming_language: 'programming_language',
-      framework: 'framework',
-      technical_requirements: 'technical_requirements',
-      environment: 'environment',
-      performance_requirements: 'performance_requirements',
-      security_requirements: 'security_requirements',
-
-      // 教育特化
-      audience_level: 'audience_level',
-      learning_objectives: 'learning_objectives',
-      prerequisites: 'prerequisites',
-      explanation_method: 'explanation_method',
-      check_points: 'check_points',
-      additional_resources: 'additional_resources',
-
-      // クリエイティブ特化
-      creative_direction: 'creative_direction',
-      target_demographic: 'target_demographic',
-      brand_tone: 'brand_tone',
-      creative_constraints: 'creative_constraints',
-      inspiration_sources: 'inspiration_sources',
-      evaluation_criteria: 'evaluation_criteria',
-
-      // 意思決定特化
-      options: 'options',
-      alternatives: 'alternatives',
-      evaluation_criteria_decision: 'evaluation_criteria',
-      weightings: 'weightings',
-      risk_factors: 'risk_factors',
-      decision_deadline: 'decision_deadline',
-
-      // === 新カテゴリ専用フィールド ===
-
-      // コードレビュー・品質向上
-      code_target: 'code_target',
-      review_focus: 'review_focus',
-      coding_standards: 'coding_standards',
-      team_context: 'team_context',
-
-      // システム設計・アーキテクチャ
-      system_requirements: 'system_requirements',
-      technology_stack: 'technology_stack',
-      scalability_needs: 'scalability_needs',
-      security_architecture: 'security_architecture',
-      integration_requirements: 'integration_requirements',
-      operational_requirements: 'operational_requirements',
-
-      // 学習・技術調査
-      learning_target: 'learning_target',
-      current_skill_level: 'current_skill_level',
-      learning_goals: 'learning_goals',
-      time_constraints: 'time_constraints',
-      practical_application: 'practical_application',
-
-      // 開発プロセス改善
-      current_process: 'current_process',
-      pain_points: 'pain_points',
-      team_structure: 'team_structure',
-      technology_environment: 'technology_environment',
-      quality_metrics: 'quality_metrics',
-      business_requirements: 'business_requirements',
-
-      // トラブルシューティング・デバッグ
-      problem_description: 'problem_description',
-      error_logs: 'error_logs',
-      system_environment: 'system_environment',
-      recent_changes: 'recent_changes',
-      monitoring_data: 'monitoring_data',
-      business_impact: 'business_impact',
-
-      // プロダクト改善・UX最適化
-      current_metrics: 'current_metrics',
-      user_pain_points: 'user_pain_points',
-      target_users: 'target_users',
-      competitive_analysis: 'competitive_analysis',
-      technical_constraints: 'technical_constraints',
-      business_goals: 'business_goals',
-
-      // AI・プロンプトエンジニアリング
-      ai_model_target: 'ai_model_target',
-      prompt_objectives: 'prompt_objectives',
-      output_structure: 'output_structure',
-      edge_cases: 'edge_cases',
-
-      // ツール・ユーティリティ開発
-      tool_purpose: 'tool_purpose',
-      target_workflows: 'target_workflows',
-      user_personas: 'user_personas',
-      technical_stack: 'technical_stack',
-      integration_needs: 'integration_needs',
-      usability_requirements: 'usability_requirements'
-    }
-
-    // XMLプロンプト生成（改行を保持）
-    Object.entries(formData.value).forEach(([key, value]) => {
+    // 基本フィールドの出力
+    outputOrder.forEach(field => {
+      const value = formData.value[field as keyof PromptFormData]
       if (value && value.trim()) {
-        const tagName = fieldMapping[key as keyof PromptFormData] || key
-        // 改行を保持したまま処理
         const content = value.trim()
-        prompt += `<${tagName}>\n${content}\n</${tagName}>\n\n`
+        prompt += `<${field}>\n${content}\n</${field}>\n\n`
       }
     })
 
+    // 特化情報の出力
+    if (formData.value.specialization && formData.value.specialization.trim()) {
+      const specializationTag = CATEGORY_SPECIALIZATION_TAGS[category]
+      const content = formData.value.specialization.trim()
+      prompt += `<${specializationTag}>\n${content}\n</${specializationTag}>\n\n`
+    }
+
     return prompt.trim()
   })
+
+  // 現在のカテゴリーで表示すべきフィールドを取得
+  const visibleFields = computed(() => {
+    const category = formData.value.category as CategoryKey
+    return CATEGORY_VISIBLE_FIELDS[category] || ['role', 'context', 'instructions', 'output_format']
+  })
+
+  // カテゴリー別のプリセット特化情報を取得
+  const getPresetSpecialization = (category: CategoryKey): string => {
+    const presets: Record<CategoryKey, string> = {
+      business: `分析対象：
+分析手法：SWOT分析、3C分析
+ステークホルダー：
+期間：
+予算：`,
+      
+      writing: `対象読者：
+文章の目的：
+文字数：
+トーン：
+構成：`,
+      
+      tech: `プログラミング言語：
+フレームワーク：
+技術要件：
+環境：
+パフォーマンス要件：
+セキュリティ要件：`,
+      
+      education: `受講者レベル：
+学習目標：
+前提知識：
+説明方法：
+チェックポイント：`,
+      
+      creative: `クリエイティブ方向性：
+対象層：
+ブランドトーン：
+制約条件：
+インスピレーション源：`,
+      
+      code_review: `レビュー対象：
+レビュー観点：
+コーディング標準：
+チーム状況：`,
+      
+      system_design: `システム要件：
+スケーラビリティ要件：
+セキュリティ要件：
+運用要件：`,
+      
+      learning: `学習対象：
+現在のスキルレベル：
+学習目標：
+時間制約：
+実践応用：`,
+      
+      process: `現在のプロセス：
+問題点：
+チーム構成：
+技術環境：
+品質指標：`,
+      
+      troubleshooting: `問題の概要：
+エラーログ：
+システム環境：
+最近の変更：
+ビジネスインパクト：`,
+      
+      ux: `現在の指標：
+ユーザーの課題：
+対象ユーザー：
+競合分析：
+技術制約：`,
+      
+      ai_prompt: `対象AIモデル：
+プロンプト目的：
+出力構造：
+エッジケース：`,
+      
+      data_analysis: `分析対象データ：
+分析目的：
+使用ツール：
+出力形式：
+対象読者：`
+    }
+    
+    return presets[category] || ''
+  }
 
   // Actions
   const updateField = (field: keyof PromptFormData, value: string) => {
@@ -381,12 +241,19 @@ export const usePromptStore = defineStore('prompt', () => {
 
   const setCurrentTab = (tab: string) => {
     currentTab.value = tab
+    // カテゴリー変更時にcategoryフィールドも更新
+    if (tab in CATEGORIES) {
+      formData.value.category = tab
+    }
   }
 
   const resetForm = () => {
     Object.keys(formData.value).forEach(key => {
       formData.value[key as keyof PromptFormData] = ''
     })
+    // カテゴリーとテンプレートタイプは保持
+    formData.value.category = currentTab.value
+    formData.value.template_type = 'standard'
   }
 
   const copyToClipboard = async (): Promise<boolean> => {
@@ -397,6 +264,13 @@ export const usePromptStore = defineStore('prompt', () => {
       console.error('コピーに失敗しました:', error)
       return false
     }
+  }
+
+  // プリセット特化情報を設定
+  const setPresetSpecialization = () => {
+    const category = formData.value.category as CategoryKey
+    const preset = getPresetSpecialization(category)
+    updateField('specialization', preset)
   }
 
   // マークダウン形式のサンプルテキストを生成する関数
@@ -425,17 +299,112 @@ function executePhase(phase) {
     updateField('instructions', sampleContent)
   }
 
+  // カテゴリー別のサンプルデータを生成
+  const generateSampleData = () => {
+    const category = formData.value.category as CategoryKey
+    
+    // 共通フィールドのサンプル
+    const commonSamples = {
+      role: '経験豊富な専門家として',
+      context: '現在の状況や背景を説明してください',
+      goals: '達成したい目標を明確に設定してください',
+      instructions: '具体的な指示や手順を記載してください',
+      output_format: 'マークダウン形式で構造化された回答'
+    }
+
+    // カテゴリー特化サンプル（必要なカテゴリーのみ定義）
+    const categorySamples: Partial<Record<CategoryKey, Partial<PromptFormData>>> = {
+      business: {
+        role: '戦略コンサルタント（経験10年）',
+        context: '新規事業参入を検討している中小企業',
+        goals: '市場分析を行い、参入戦略を策定する',
+        thinking: 'SWOT分析と3C分析を実施し、リスク評価を含める',
+        instructions: '分析結果に基づいて、具体的な参入戦略を3つ提案してください'
+      },
+      writing: {
+        role: '経験豊富な編集者・ライター',
+        context: '企業のオウンドメディア記事作成',
+        goals: 'SEOに配慮した読みやすい記事の執筆',
+        style: '専門的だが親しみやすい文体',
+        instructions: '指定したテーマで1500字程度の記事を作成してください'
+      },
+      tech: {
+        role: 'シニアエンジニア（Python/FastAPI専門）',
+        context: 'レガシーシステムのマイクロサービス化プロジェクト',
+        goals: 'スケーラブルなAPI設計と実装',
+        tech_stack: 'Python 3.11, FastAPI, PostgreSQL, Docker, AWS',
+        constraints: 'レスポンス時間1秒以内、既存DB構造変更不可',
+        thinking: 'Clean Architectureを採用し、段階的移行を計画'
+      },
+      education: {
+        role: '技術教育の専門家',
+        context: '新入社員向けプログラミング研修',
+        goals: '基礎から実践まで体系的に学習できる教材作成',
+        thinking: '段階的学習と実践演習を組み合わせたカリキュラム',
+        instructions: '初心者でも理解できるよう、具体例を交えて説明してください'
+      },
+      creative: {
+        role: 'シニアクリエイティブディレクター',
+        context: '新ブランドのローンチキャンペーン',
+        goals: 'ブランドアイデンティティの確立と認知度向上',
+        style: 'モダンで親しみやすく、革新的なトーン',
+        references: '成功事例：Apple、Nike、Airbnbのブランディング戦略'
+      },
+      code_review: {
+        role: 'シニアソフトウェアエンジニア',
+        context: 'チームのコードレビュー実施',
+        goals: 'コード品質向上とチームのスキルアップ',
+        tech_stack: 'TypeScript, React, Node.js',
+        thinking: 'セキュリティ、パフォーマンス、保守性の観点で評価',
+        instructions: 'コードの改善点と具体的な修正案を提示してください'
+      },
+      system_design: {
+        role: 'システムアーキテクト',
+        context: '大規模Webアプリケーションの設計',
+        goals: 'スケーラブルで保守性の高いシステム設計',
+        tech_stack: 'マイクロサービス、Kubernetes、AWS',
+        constraints: '100万PV/日対応、99.9%可用性',
+        thinking: 'ドメイン駆動設計とイベント駆動アーキテクチャを採用'
+      }
+    }
+
+    // 共通フィールドを設定
+    Object.entries(commonSamples).forEach(([key, value]) => {
+      if (visibleFields.value.includes(key)) {
+        updateField(key as keyof PromptFormData, value)
+      }
+    })
+
+    // カテゴリー特化フィールドを設定
+    if (categorySamples[category]) {
+      Object.entries(categorySamples[category]).forEach(([key, value]) => {
+        if (value && visibleFields.value.includes(key)) {
+          updateField(key as keyof PromptFormData, value)
+        }
+      })
+    }
+
+    // 特化情報を設定
+    setPresetSpecialization()
+  }
+
   return {
     // State
     currentTab,
     formData,
     // Getters
     generatedPrompt,
+    visibleFields,
     // Actions
     updateField,
     setCurrentTab,
     resetForm,
     copyToClipboard,
-    generateSampleMarkdown
+    setPresetSpecialization,
+    generateSampleMarkdown,
+    generateSampleData,
+    // Constants
+    CATEGORIES,
+    CATEGORY_SPECIALIZATION_TAGS
   }
 })
