@@ -1,10 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { usePromptStore } from '@/stores/promptStore'
 import { Copy, RotateCcw, CheckCircle } from 'lucide-vue-next'
 
 const promptStore = usePromptStore()
 const copySuccess = ref(false)
+
+// ⚡ Bolt Optimization:
+// What: Extracted expensive string manipulation (split/filter) into a computed property.
+// Why: The previous template expression evaluated this logic 7 times per render (5 for v-for, 2 for text).
+// Impact: Reduces re-evaluations from 7x per render to 1x per `generatedPrompt` change, saving CPU cycles on every keystroke.
+const promptQuality = computed(() => {
+  if (!promptStore.generatedPrompt) return 0
+  const tagsCount = promptStore.generatedPrompt
+    .split('\n')
+    .filter((line) => line.includes('<')).length
+  return Math.min(5, Math.floor(tagsCount / 2))
+})
 
 const handleCopy = async () => {
   const success = await promptStore.copyToClipboard()
@@ -70,41 +82,14 @@ const handleReset = () => {
             :key="i"
             :class="[
               'quality-dot',
-              i <=
-              Math.min(
-                5,
-                Math.floor(
-                  promptStore.generatedPrompt.split('\n').filter((line) => line.includes('<'))
-                    .length / 2,
-                ),
-              )
-                ? 'quality-dot-active'
-                : 'quality-dot-inactive',
+              i <= promptQuality ? 'quality-dot-active' : 'quality-dot-inactive',
             ]"
           />
         </div>
       </div>
       <p class="quality-description">
-        {{
-          Math.min(
-            5,
-            Math.floor(
-              promptStore.generatedPrompt.split('\n').filter((line) => line.includes('<')).length /
-                2,
-            ),
-          )
-        }}/5 -
-        {{
-          Math.min(
-            5,
-            Math.floor(
-              promptStore.generatedPrompt.split('\n').filter((line) => line.includes('<')).length /
-                2,
-            ),
-          ) >= 3
-            ? '良好'
-            : '基本的'
-        }}
+        {{ promptQuality }}/5 -
+        {{ promptQuality >= 3 ? '良好' : '基本的' }}
       </p>
     </div>
   </div>

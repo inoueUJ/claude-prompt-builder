@@ -1,0 +1,3 @@
+## 2025-05-18 - Vue Template Expression Cost Multiplication
+**Learning:** Placing expensive operations like string manipulation (`split`, `filter`) directly inside Vue templates is a significant performance anti-pattern. If the expression is used multiple times (e.g., duplicated for different interpolations or inside a `v-for` loop), the expensive operation will be re-evaluated on every render for every instance, multiplying the cost.
+**Action:** Always extract complex or expensive template expressions into Vue `computed` properties. `computed` properties are cached based on their dependencies, so the expensive operation is only executed once when the underlying data changes, regardless of how many times it's used in the template.
