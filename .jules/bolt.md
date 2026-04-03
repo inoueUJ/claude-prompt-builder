@@ -1,0 +1,3 @@
+## 2025-05-15 - Vue Template String Operations Bottleneck
+**Learning:** In Vue, expensive string operations (like `split`, `filter`) placed directly in the template, especially within `v-for` directives, are executed multiple times per render cycle (e.g., 5 times for a 5-element loop). This creates unnecessary overhead on the main thread when state updates.
+**Action:** Always extract complex, derived string calculations or array manipulations from Vue templates into `computed` properties. This memoizes the result so it only runs when dependencies actually change, rather than every render cycle.
