@@ -1,10 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { usePromptStore } from '@/stores/promptStore'
 import { Copy, RotateCcw, CheckCircle } from 'lucide-vue-next'
 
 const promptStore = usePromptStore()
 const copySuccess = ref(false)
+
+// Optimize: Calculate quality score once per update
+const promptQualityScore = computed(() => {
+  const prompt = promptStore.generatedPrompt
+  if (!prompt) return 0
+
+  const tagCount = prompt.split('\n').filter((line) => line.includes('<')).length
+  return Math.min(5, Math.floor(tagCount / 2))
+})
 
 const handleCopy = async () => {
   const success = await promptStore.copyToClipboard()
@@ -70,41 +79,14 @@ const handleReset = () => {
             :key="i"
             :class="[
               'quality-dot',
-              i <=
-              Math.min(
-                5,
-                Math.floor(
-                  promptStore.generatedPrompt.split('\n').filter((line) => line.includes('<'))
-                    .length / 2,
-                ),
-              )
-                ? 'quality-dot-active'
-                : 'quality-dot-inactive',
+              i <= promptQualityScore ? 'quality-dot-active' : 'quality-dot-inactive',
             ]"
           />
         </div>
       </div>
       <p class="quality-description">
-        {{
-          Math.min(
-            5,
-            Math.floor(
-              promptStore.generatedPrompt.split('\n').filter((line) => line.includes('<')).length /
-                2,
-            ),
-          )
-        }}/5 -
-        {{
-          Math.min(
-            5,
-            Math.floor(
-              promptStore.generatedPrompt.split('\n').filter((line) => line.includes('<')).length /
-                2,
-            ),
-          ) >= 3
-            ? '良好'
-            : '基本的'
-        }}
+        {{ promptQualityScore }}/5 -
+        {{ promptQualityScore >= 3 ? '良好' : '基本的' }}
       </p>
     </div>
   </div>
@@ -116,13 +98,12 @@ const handleReset = () => {
   border-radius: 12px;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   padding: 24px;
-  height: fit-content; /* デフォルトの高さをコンテンツに合わせる */
+  height: fit-content;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
 }
 
-/* PC表示では高さを100%にする */
 @media (min-width: 768px) {
   .prompt-display {
     height: 100%;
@@ -203,7 +184,6 @@ const handleReset = () => {
   width: 100%;
   height: 100%;
   min-height: 300px;
-  /* max-height: 500px; */ /* 最大の高さを削除 */
   font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
   font-size: 0.875rem;
   line-height: 1.6;
@@ -231,37 +211,6 @@ const handleReset = () => {
 
 .empty-text {
   line-height: 1.5;
-}
-
-.usage-guide {
-  padding: 16px;
-  background: #eff6ff;
-  border-radius: 8px;
-  margin-bottom: 16px;
-}
-
-.usage-title {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #1e40af;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-}
-
-.usage-icon {
-  margin-right: 6px;
-}
-
-.usage-content {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.usage-step {
-  font-size: 0.875rem;
-  color: #1d4ed8;
 }
 
 .quality-indicator {
@@ -309,7 +258,6 @@ const handleReset = () => {
   margin: 0;
 }
 
-/* レスポンシブ対応 */
 @media (max-width: 768px) {
   .prompt-display {
     padding: 16px;
@@ -332,8 +280,8 @@ const handleReset = () => {
   }
 
   .btn {
-    flex-grow: 1; /* ボタンの幅を均等に広げる */
-    justify-content: center; /* ボタン内のテキストとアイコンを中央揃え */
+    flex-grow: 1;
+    justify-content: center;
     padding: 12px 10px;
     font-size: 0.8rem;
   }

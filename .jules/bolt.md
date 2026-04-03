@@ -1,0 +1,3 @@
+## 2024-04-03 - Vue Template Inline Calculation Bottleneck
+**Learning:** In Vue 3, writing complex JavaScript logic (e.g., string splitting and filtering) directly inside a template interpolation or a `v-for` loop causes the calculation to re-execute on every render pass for every iteration. In `PromptDisplay.vue`, a quality calculation was running 7 times per render instead of 1.
+**Action:** Always extract expensive template logic into a `computed` property. This ensures the value is cached and only recalculated when its reactive dependencies change, saving significant CPU cycles during re-renders.
