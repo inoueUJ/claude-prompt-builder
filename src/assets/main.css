@@ -7,7 +7,13 @@
 
 /* 基本設定 */
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   line-height: 1.6;
   color: #333;
   background-color: #f9fafb;
@@ -388,7 +394,8 @@ body {
 }
 
 .font-mono {
-  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Monaco, Inconsolata, 'Roboto Mono', monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, 'SF Mono', Monaco, Inconsolata, 'Roboto Mono', monospace;
 }
 
 /* ボーダー */
@@ -435,7 +442,9 @@ body {
 }
 
 .shadow-md {
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 /* フォーカス */
@@ -500,7 +509,9 @@ body {
 }
 
 .transform {
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate))
+    skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x))
+    scaleY(var(--tw-scale-y));
 }
 
 .scale-105 {
@@ -579,7 +590,9 @@ body {
 .card {
   background-color: #ffffff;
   border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
   padding: 1.5rem;
 }
 
@@ -588,19 +601,19 @@ body {
   .md\\:flex {
     display: flex;
   }
-  
+
   .md\\:flex-row {
     flex-direction: row;
   }
-  
+
   .md\\:mt-0 {
     margin-top: 0;
   }
-  
+
   .md\\:hidden {
     display: none;
   }
-  
+
   .sm\\:px-6 {
     padding-left: 1.5rem;
     padding-right: 1.5rem;

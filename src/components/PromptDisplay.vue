@@ -1,10 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { usePromptStore } from '@/stores/promptStore'
 import { Copy, RotateCcw, CheckCircle } from 'lucide-vue-next'
 
 const promptStore = usePromptStore()
 const copySuccess = ref(false)
+
+// Memoize the expensive prompt quality calculation to prevent running it multiple times per render cycle (7 times previously)
+const promptQualityScore = computed(() => {
+  if (!promptStore.generatedPrompt) return 0
+  return Math.min(
+    5,
+    Math.floor(
+      promptStore.generatedPrompt.split('\n').filter((line) => line.includes('<')).length / 2,
+    ),
+  )
+})
 
 const handleCopy = async () => {
   const success = await promptStore.copyToClipboard()
@@ -70,41 +81,14 @@ const handleReset = () => {
             :key="i"
             :class="[
               'quality-dot',
-              i <=
-              Math.min(
-                5,
-                Math.floor(
-                  promptStore.generatedPrompt.split('\n').filter((line) => line.includes('<'))
-                    .length / 2,
-                ),
-              )
-                ? 'quality-dot-active'
-                : 'quality-dot-inactive',
+              i <= promptQualityScore ? 'quality-dot-active' : 'quality-dot-inactive',
             ]"
           />
         </div>
       </div>
       <p class="quality-description">
-        {{
-          Math.min(
-            5,
-            Math.floor(
-              promptStore.generatedPrompt.split('\n').filter((line) => line.includes('<')).length /
-                2,
-            ),
-          )
-        }}/5 -
-        {{
-          Math.min(
-            5,
-            Math.floor(
-              promptStore.generatedPrompt.split('\n').filter((line) => line.includes('<')).length /
-                2,
-            ),
-          ) >= 3
-            ? '良好'
-            : '基本的'
-        }}
+        {{ promptQualityScore }}/5 -
+        {{ promptQualityScore >= 3 ? '良好' : '基本的' }}
       </p>
     </div>
   </div>
