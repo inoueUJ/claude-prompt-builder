@@ -549,7 +549,7 @@ onMounted(() => {
         const targetElement = document.querySelector(href)
         if (targetElement) {
           targetElement.scrollIntoView({
-            behavior: 'smooth'
+            behavior: 'smooth',
           })
         }
       }
