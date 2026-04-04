@@ -87,8 +87,8 @@ describe('PromptStore', () => {
     const store = usePromptStore()
 
     store.updateField('role', 'データサイエンティスト')
-    store.updateField('context', 'ユーザー行動データ')
-    store.updateField('goals', '統計的手法')
+    store.updateField('tech_stack', 'Python, SQL')
+    store.updateField('thinking', '統計的手法')
     store.updateField('constraints', '個人情報保護')
 
     const prompt = store.generatedPrompt

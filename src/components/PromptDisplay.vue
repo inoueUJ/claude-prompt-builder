@@ -6,7 +6,9 @@ import { Copy, RotateCcw, CheckCircle } from 'lucide-vue-next'
 const promptStore = usePromptStore()
 const copySuccess = ref(false)
 
-// Optimize: Calculate quality score once per update
+// ⚡ Bolt Optimization: Memoize expensive quality score calculation
+// Previously, the string split/filter logic was duplicated 7 times in the template
+// and evaluated on every keystroke. Using computed caches the result.
 const promptQualityScore = computed(() => {
   const prompt = promptStore.generatedPrompt
   if (!prompt) return 0
