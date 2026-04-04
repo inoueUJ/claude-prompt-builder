@@ -26,7 +26,7 @@ const configExists = computed(() => {
     <template v-if="configExists">
       <!-- 入力フォーム -->
       <div class="form-panel">
-        <PromptForm 
+        <PromptForm
           :fields="currentConfig.fields"
           :title="currentConfig.title"
           :icon="currentConfig.icon"
@@ -103,7 +103,7 @@ const configExists = computed(() => {
     flex-direction: row;
     gap: 32px;
   }
-  
+
   .form-panel,
   .display-panel {
     width: 50%;
