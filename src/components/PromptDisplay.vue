@@ -100,13 +100,12 @@ const handleReset = () => {
   border-radius: 12px;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   padding: 24px;
-  height: fit-content; /* デフォルトの高さをコンテンツに合わせる */
+  height: fit-content;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
 }
 
-/* PC表示では高さを100%にする */
 @media (min-width: 768px) {
   .prompt-display {
     height: 100%;
@@ -187,7 +186,6 @@ const handleReset = () => {
   width: 100%;
   height: 100%;
   min-height: 300px;
-  /* max-height: 500px; */ /* 最大の高さを削除 */
   font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
   font-size: 0.875rem;
   line-height: 1.6;
@@ -215,37 +213,6 @@ const handleReset = () => {
 
 .empty-text {
   line-height: 1.5;
-}
-
-.usage-guide {
-  padding: 16px;
-  background: #eff6ff;
-  border-radius: 8px;
-  margin-bottom: 16px;
-}
-
-.usage-title {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #1e40af;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-}
-
-.usage-icon {
-  margin-right: 6px;
-}
-
-.usage-content {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.usage-step {
-  font-size: 0.875rem;
-  color: #1d4ed8;
 }
 
 .quality-indicator {
@@ -293,7 +260,6 @@ const handleReset = () => {
   margin: 0;
 }
 
-/* レスポンシブ対応 */
 @media (max-width: 768px) {
   .prompt-display {
     padding: 16px;
@@ -316,8 +282,8 @@ const handleReset = () => {
   }
 
   .btn {
-    flex-grow: 1; /* ボタンの幅を均等に広げる */
-    justify-content: center; /* ボタン内のテキストとアイコンを中央揃え */
+    flex-grow: 1;
+    justify-content: center;
     padding: 12px 10px;
     font-size: 0.8rem;
   }
