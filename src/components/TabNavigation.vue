@@ -11,7 +11,7 @@ const tabs = computed(() =>
     id: r.name as string,
     icon: r.meta?.icon || '',
     label: r.meta?.label || (r.meta?.title as string) || (r.name as string),
-  }))
+  })),
 )
 
 const currentTab = computed(() => route.name as string)

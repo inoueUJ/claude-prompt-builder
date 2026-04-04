@@ -13,7 +13,9 @@ import TabNavigation from '@/components/TabNavigation.vue'
             <span class="app-icon">🤖</span>
             Claude Prompt Builder
           </h1>
-          <p class="app-description visually-hidden">XMLタグを自動生成して、より効果的なプロンプトを作成</p>
+          <p class="app-description visually-hidden">
+            XMLタグを自動生成して、より効果的なプロンプトを作成
+          </p>
         </div>
       </div>
     </header>
@@ -32,9 +34,7 @@ import TabNavigation from '@/components/TabNavigation.vue'
     <!-- フッター -->
     <footer class="app-footer">
       <div class="footer-content">
-        <div class="footer-info">
-          © 2025 Claude Prompt Builder
-        </div>
+        <div class="footer-info">© 2025 Claude Prompt Builder</div>
         <div class="footer-links">
           <a
             href="https://docs.anthropic.com/ja/docs/build-with-claude/prompt-engineering/overview"
