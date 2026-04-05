@@ -180,6 +180,21 @@ const CATEGORY_VISIBLE_FIELDS: Record<CategoryKey, string[]> = {
   ],
 }
 
+// Constitutional AI原則に基づく出力順序
+const OUTPUT_ORDER = [
+  'role',
+  'context',
+  'goals',
+  'tech_stack',
+  'constraints',
+  'thinking',
+  'instructions',
+  'references',
+  'style',
+  'output_format',
+  'deliverables',
+] as const
+
 export const usePromptStore = defineStore('prompt', () => {
   // State
   const currentTab = ref<string>('business')
@@ -212,23 +227,8 @@ export const usePromptStore = defineStore('prompt', () => {
     let prompt = ''
     const category = formData.value.category as CategoryKey
 
-    // Constitutional AI原則に基づく出力順序
-    const outputOrder = [
-      'role',
-      'context',
-      'goals',
-      'tech_stack',
-      'constraints',
-      'thinking',
-      'instructions',
-      'references',
-      'style',
-      'output_format',
-      'deliverables',
-    ]
-
     // 基本フィールドの出力
-    outputOrder.forEach((field) => {
+    OUTPUT_ORDER.forEach((field) => {
       const value = formData.value[field as keyof PromptFormData]
       if (value && value.trim()) {
         const content = value.trim()
