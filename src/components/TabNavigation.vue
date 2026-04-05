@@ -6,13 +6,11 @@ import { promptRoutes } from '@/router'
 const router = useRouter()
 const route = useRoute()
 
-const tabs = computed(() =>
-  promptRoutes.map((r) => ({
-    id: r.name as string,
-    icon: r.meta?.icon || '',
-    label: r.meta?.label || (r.meta?.title as string) || (r.name as string),
-  })),
-)
+const tabs = promptRoutes.map((r) => ({
+  id: r.name as string,
+  icon: r.meta?.icon || '',
+  label: r.meta?.label || (r.meta?.title as string) || (r.name as string),
+}))
 
 const currentTab = computed(() => route.name as string)
 
