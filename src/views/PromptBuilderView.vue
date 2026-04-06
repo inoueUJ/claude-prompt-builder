@@ -28,8 +28,8 @@ const configExists = computed(() => {
       <div class="form-panel">
         <PromptForm
           :fields="currentConfig.fields"
-          :title="currentConfig.title"
-          :icon="currentConfig.icon"
+          :title="(currentConfig as any).title || route.name"
+          :icon="(currentConfig as any).icon || '📝'"
         />
       </div>
 
@@ -49,7 +49,7 @@ const configExists = computed(() => {
           <ul>
             <li v-for="(config, key) in promptConfigs" :key="key">
               <router-link :to="{ name: key }" class="error-link">
-                {{ config.icon }} {{ config.title }}
+                {{ (config as any).icon || '📝' }} {{ (config as any).title || key }}
               </router-link>
             </li>
           </ul>
