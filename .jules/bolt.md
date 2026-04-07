@@ -1,3 +1,7 @@
 ## 2025-03-05 - Expensive inline template calculations in Vue 3
 **Learning:** In Vue 3, complex inline template expressions like `string.split('\n').filter().length` are evaluated on every re-render (which happens on every keystroke in a form). If this expression is used multiple times (e.g., inside a `v-for` and multiple interpolation tags), the performance penalty is multiplied by the number of usages.
 **Action:** Always move complex derived state from templates into `computed` properties. Vue will cache the computed result based on its reactive dependencies, preventing redundant calculations on every render cycle.
+
+## 2025-03-05 - Vue 3 IME Composition and v-model
+**Learning:** In Vue 3, using manual `:value` and `@input` bindings bypasses Vue's built-in IME (Input Method Editor) composition handling. This can cause performance issues and janky inputs for languages that require composition (like Japanese), as the state updates on every individual keystroke before the composition is finalized. Furthermore, calling helper functions inside the template for each field causes unnecessary function executions during the render cycle.
+**Action:** Always prefer `v-model` for form inputs as it properly handles IME composition out-of-the-box, ensuring state only updates when the composition is complete. Additionally, accessing reactive store state directly via `v-model` (e.g., `v-model="store.data[key]"`) avoids template function calls.
