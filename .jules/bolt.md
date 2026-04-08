@@ -1,3 +1,3 @@
-## 2025-03-05 - Expensive inline template calculations in Vue 3
-**Learning:** In Vue 3, complex inline template expressions like `string.split('\n').filter().length` are evaluated on every re-render (which happens on every keystroke in a form). If this expression is used multiple times (e.g., inside a `v-for` and multiple interpolation tags), the performance penalty is multiplied by the number of usages.
-**Action:** Always move complex derived state from templates into `computed` properties. Vue will cache the computed result based on its reactive dependencies, preventing redundant calculations on every render cycle.
+## 2024-04-08 - Layout Thrashing in Vue Input Handlers
+**Learning:** Synchronous DOM reads and writes (like `textarea.style.height = 'auto'` followed immediately by `textarea.scrollHeight`) during high-frequency events like `@input` cause layout thrashing and main thread blocking, specifically in dynamic form components. Additionally, using wrapper getter methods in Vue templates forces re-evaluation on every render cycle instead of taking advantage of Vue's reactive dependencies.
+**Action:** Always wrap synchronous DOM read/write pairs in `requestAnimationFrame` when they are triggered by continuous user input, and use direct reactive property access in Vue templates instead of getter functions.

@@ -25,10 +25,6 @@ const updateField = (field: keyof PromptFormData, value: string) => {
   promptStore.updateField(field, value)
 }
 
-const getFieldValue = (field: keyof PromptFormData) => {
-  return promptStore.formData[field]
-}
-
 // フィールドをグループ別に分類
 const groupedFields = computed(() => {
   const groups: Record<string, FormField[]> = {}
@@ -45,10 +41,19 @@ const groupedFields = computed(() => {
 })
 
 // テキストエリアのサイズを自動調整
+// ⚡ Bolt Optimization: Use requestAnimationFrame to prevent layout thrashing
+// ⚡ Bolt Optimization: Cancel previous rAF to avoid redundant execution
+let resizeRaf: number | null = null
 const autoResize = (event: Event) => {
+  if (resizeRaf !== null) {
+    cancelAnimationFrame(resizeRaf)
+  }
   const textarea = event.target as HTMLTextAreaElement
-  textarea.style.height = 'auto'
-  textarea.style.height = textarea.scrollHeight + 'px'
+  resizeRaf = requestAnimationFrame(() => {
+    textarea.style.height = 'auto'
+    textarea.style.height = textarea.scrollHeight + 'px'
+    resizeRaf = null
+  })
 }
 </script>
 
@@ -74,9 +79,10 @@ const autoResize = (event: Event) => {
               <span v-if="field.required" class="required-indicator">*</span>
             </label>
 
+            <!-- ⚡ Bolt Optimization: Replace method calls with direct access to reactive state -->
             <textarea
               v-if="field.type === 'textarea'"
-              :value="getFieldValue(field.key)"
+              :value="promptStore.formData[field.key]"
               @input="
                 (e) => {
                   updateField(field.key, (e.target as HTMLTextAreaElement).value)
@@ -92,7 +98,7 @@ const autoResize = (event: Event) => {
             <input
               v-else
               type="text"
-              :value="getFieldValue(field.key)"
+              :value="promptStore.formData[field.key]"
               @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
               :placeholder="field.placeholder"
               class="form-input"
