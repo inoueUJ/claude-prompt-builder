@@ -44,11 +44,29 @@ const groupedFields = computed(() => {
   return groups
 })
 
-// テキストエリアのサイズを自動調整
+// ⚡ Bolt Optimization: Prevent layout thrashing on textarea resize
+// Previously, setting style.height to 'auto' and immediately reading scrollHeight
+// forced synchronous layout recalculation on every keystroke, blocking the main thread.
+// Using requestAnimationFrame defers and batches these layout recalculations.
+// We use a WeakMap to track frame IDs per textarea to prevent conflicts when multiple
+// textareas are updated simultaneously (e.g. during form reset).
+const resizeFrames = new WeakMap<HTMLTextAreaElement, number>();
+
 const autoResize = (event: Event) => {
   const textarea = event.target as HTMLTextAreaElement
-  textarea.style.height = 'auto'
-  textarea.style.height = textarea.scrollHeight + 'px'
+
+  const existingFrame = resizeFrames.get(textarea);
+  if (existingFrame !== undefined) {
+    cancelAnimationFrame(existingFrame);
+  }
+
+  const frameId = requestAnimationFrame(() => {
+    textarea.style.height = 'auto'
+    textarea.style.height = textarea.scrollHeight + 'px'
+    resizeFrames.delete(textarea);
+  });
+
+  resizeFrames.set(textarea, frameId);
 }
 </script>
 
