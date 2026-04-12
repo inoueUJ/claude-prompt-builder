@@ -28,8 +28,8 @@ const configExists = computed(() => {
       <div class="form-panel">
         <PromptForm
           :fields="currentConfig.fields"
-          :title="currentConfig.title"
-          :icon="currentConfig.icon"
+          :title="currentConfig.title || (route.meta.title as string) || 'プロンプト設定'"
+          :icon="currentConfig.icon || (route.meta.icon as string) || '📝'"
         />
       </div>
 
