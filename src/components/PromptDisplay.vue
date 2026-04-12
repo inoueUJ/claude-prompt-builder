@@ -6,15 +6,27 @@ import { Copy, RotateCcw, CheckCircle } from 'lucide-vue-next'
 const promptStore = usePromptStore()
 const copySuccess = ref(false)
 
-// ⚡ Bolt Optimization: Memoize expensive quality score calculation
-// Previously, the string split/filter logic was duplicated 7 times in the template
-// and evaluated on every keystroke. Using computed caches the result.
+// ⚡ Bolt Optimization: Calculate quality score directly from source state
+// Previously, this parsed the entire generated string on every keystroke (O(N) operation).
+// By counting filled fields directly from formData, we avoid expensive string splitting
+// and array filtering, making the calculation O(1) and immune to user-inputted '<' characters.
 const promptQualityScore = computed(() => {
-  const prompt = promptStore.generatedPrompt
-  if (!prompt) return 0
+  const data = promptStore.formData
+  let filledCount = 0
 
-  const tagCount = prompt.split('\n').filter((line) => line.includes('<')).length
-  return Math.min(5, Math.floor(tagCount / 2))
+  const fieldsToCheck = [
+    'role', 'context', 'goals', 'tech_stack', 'constraints',
+    'thinking', 'instructions', 'references', 'style',
+    'output_format', 'deliverables', 'specialization'
+  ] as const
+
+  for (const field of fieldsToCheck) {
+    if (data[field] && data[field].trim()) {
+      filledCount++
+    }
+  }
+
+  return Math.min(5, filledCount)
 })
 
 const handleCopy = async () => {
