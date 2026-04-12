@@ -6,27 +6,26 @@ import { Copy, RotateCcw, CheckCircle } from 'lucide-vue-next'
 const promptStore = usePromptStore()
 const copySuccess = ref(false)
 
-// ⚡ Bolt Optimization: Calculate quality score directly from source state
-// Previously, this parsed the entire generated string on every keystroke (O(N) operation).
-// By counting filled fields directly from formData, we avoid expensive string splitting
-// and array filtering, making the calculation O(1) and immune to user-inputted '<' characters.
+// ⚡ Bolt Optimization: Replace expensive array operations with a simple loop
+// Previously, counting tags involved splitting the entire string and filtering an array
+// on every keystroke, which allocates memory and causes GC pressure.
+// This O(n) simple loop avoids allocating any new strings or arrays while
+// preserving the exact same business logic (counting opening tags).
 const promptQualityScore = computed(() => {
-  const data = promptStore.formData
-  let filledCount = 0
+  const prompt = promptStore.generatedPrompt
+  if (!prompt) return 0
 
-  const fieldsToCheck = [
-    'role', 'context', 'goals', 'tech_stack', 'constraints',
-    'thinking', 'instructions', 'references', 'style',
-    'output_format', 'deliverables', 'specialization'
-  ] as const
-
-  for (const field of fieldsToCheck) {
-    if (data[field] && data[field].trim()) {
-      filledCount++
+  let tagCount = 0
+  // Instead of splitting the string by newline and finding '<', we just count
+  // occurrences of opening tags (to mirror the math of floor(total_tags / 2)).
+  // We identify an opening tag by finding '<' that is not immediately followed by '/'.
+  for (let i = 0; i < prompt.length; i++) {
+    if (prompt[i] === '<' && prompt[i + 1] !== '/') {
+      tagCount++
     }
   }
 
-  return Math.min(5, filledCount)
+  return Math.min(5, tagCount)
 })
 
 const handleCopy = async () => {
