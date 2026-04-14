@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router'
 import PromptForm from '@/components/PromptForm.vue'
 import PromptDisplay from '@/components/PromptDisplay.vue'
 import { promptConfigs } from '@/configs/promptConfigs'
-import { promptRoutes } from '@/router'
 
 const route = useRoute()
 
@@ -12,12 +11,6 @@ const route = useRoute()
 const currentConfig = computed(() => {
   const routeName = route.name as string
   return promptConfigs[routeName] || promptConfigs.business // デフォルトはbusiness
-})
-
-const routeMeta = computed(() => {
-  const routeName = route.name as string
-  const currentRoute = promptRoutes.find((r) => r.name === routeName)
-  return currentRoute?.meta || {}
 })
 
 // 設定が見つからない場合のフォールバック
@@ -35,8 +28,8 @@ const configExists = computed(() => {
       <div class="form-panel">
         <PromptForm
           :fields="currentConfig.fields"
-          :title="(routeMeta.title as string)"
-          :icon="(routeMeta.icon as string)"
+          :title="currentConfig.title"
+          :icon="currentConfig.icon"
         />
       </div>
 
@@ -54,9 +47,9 @@ const configExists = computed(() => {
           <p>指定されたカテゴリ「{{ route.name }}」の設定が見つかりません。</p>
           <p>利用可能なカテゴリ:</p>
           <ul>
-            <li v-for="r in promptRoutes" :key="r.name as string">
-              <router-link :to="{ name: r.name }" class="error-link">
-                {{ r.meta?.icon }} {{ r.meta?.title }}
+            <li v-for="(config, key) in promptConfigs" :key="key">
+              <router-link :to="{ name: key }" class="error-link">
+                {{ config.icon }} {{ config.title }}
               </router-link>
             </li>
           </ul>
