@@ -1,0 +1,20 @@
+--- PromptForm.vue
++++ PromptForm.vue
+@@ -46,8 +46,15 @@
+ })
+
+ // テキストエリアのサイズを自動調整
++let resizeAnimationFrame: number | null = null;
+ const autoResize = (event: Event) => {
+   const textarea = event.target as HTMLTextAreaElement
+-  textarea.style.height = 'auto'
+-  textarea.style.height = textarea.scrollHeight + 'px'
++  // ⚡ Bolt Optimization: Use requestAnimationFrame to prevent synchronous layout thrashing
++  // Moving layout reads/writes to the next animation frame prevents expensive reflows during typing
++  if (resizeAnimationFrame !== null) cancelAnimationFrame(resizeAnimationFrame)
++
++  resizeAnimationFrame = requestAnimationFrame(() => {
++    textarea.style.height = 'auto'
++    textarea.style.height = textarea.scrollHeight + 'px'
++  })
+ }
