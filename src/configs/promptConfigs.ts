@@ -11,6 +11,8 @@ export interface FormField {
 
 export interface PromptConfig {
   fields: FormField[]
+  title?: string
+  icon?: string
 }
 
 export const promptConfigs: Record<string, PromptConfig> = {
