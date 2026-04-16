@@ -87,7 +87,7 @@ describe('PromptStore', () => {
     const store = usePromptStore()
 
     store.updateField('role', 'データサイエンティスト')
-    store.updateField('tech_stack', 'Python, SQL')
+    store.updateField('goals', 'ユーザー行動データ')
     store.updateField('thinking', '統計的手法')
     store.updateField('constraints', '個人情報保護')
 
