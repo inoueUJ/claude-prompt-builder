@@ -4,26 +4,26 @@ import { ref, computed } from 'vue'
 // === 改善版: 統合されたプロンプトフォーム構造 ===
 export interface PromptFormData {
   // === 6つの基本カテゴリー ===
-  role: string                    // 役割・背景
-  context: string                 // 背景・状況
-  goals: string                   // 目的・目標
-  constraints: string             // 制約・条件
-  thinking: string                // 思考・分析枠組み
-  instructions: string            // 具体的指示
-  references: string              // 参考・例
-  style: string                   // スタイル・トーン
-  output_format: string           // 出力形式
-  deliverables: string            // 成果物
+  role: string // 役割・背景
+  context: string // 背景・状況
+  goals: string // 目的・目標
+  constraints: string // 制約・条件
+  thinking: string // 思考・分析枠組み
+  instructions: string // 具体的指示
+  references: string // 参考・例
+  style: string // スタイル・トーン
+  output_format: string // 出力形式
+  deliverables: string // 成果物
 
   // === 技術特化フィールド ===
-  tech_stack: string              // 技術スタック統合
+  tech_stack: string // 技術スタック統合
 
   // === 特化情報統合フィールド ===
-  specialization: string          // カテゴリー特化情報
+  specialization: string // カテゴリー特化情報
 
   // === メタ情報 ===
-  category: string                // 選択中のカテゴリー
-  template_type: string           // テンプレートタイプ
+  category: string // 選択中のカテゴリー
+  template_type: string // テンプレートタイプ
 }
 
 // カテゴリー定義
@@ -40,7 +40,7 @@ export const CATEGORIES = {
   troubleshooting: 'トラブルシューティング',
   ux: 'UX最適化',
   ai_prompt: 'AIプロンプト',
-  data_analysis: 'データ分析・可視化'
+  data_analysis: 'データ分析・可視化',
 } as const
 
 export type CategoryKey = keyof typeof CATEGORIES
@@ -59,24 +59,125 @@ const CATEGORY_SPECIALIZATION_TAGS: Record<CategoryKey, string> = {
   troubleshooting: 'problem_context',
   ux: 'ux_requirements',
   ai_prompt: 'prompt_design',
-  data_analysis: 'analysis_requirements'
+  data_analysis: 'analysis_requirements',
 }
 
 // カテゴリー別表示フィールド定義
 const CATEGORY_VISIBLE_FIELDS: Record<CategoryKey, string[]> = {
-  business: ['role', 'context', 'goals', 'thinking', 'instructions', 'references', 'output_format', 'deliverables'],
+  business: [
+    'role',
+    'context',
+    'goals',
+    'thinking',
+    'instructions',
+    'references',
+    'output_format',
+    'deliverables',
+  ],
   writing: ['role', 'context', 'goals', 'style', 'instructions', 'references', 'output_format'],
-  tech: ['role', 'context', 'goals', 'tech_stack', 'constraints', 'thinking', 'instructions', 'output_format', 'deliverables'],
-  education: ['role', 'context', 'goals', 'thinking', 'instructions', 'references', 'style', 'output_format'],
-  creative: ['role', 'context', 'goals', 'style', 'instructions', 'references', 'output_format', 'deliverables'],
-  code_review: ['role', 'context', 'goals', 'tech_stack', 'constraints', 'thinking', 'instructions', 'output_format'],
-  system_design: ['role', 'context', 'goals', 'tech_stack', 'constraints', 'thinking', 'instructions', 'output_format', 'deliverables'],
+  tech: [
+    'role',
+    'context',
+    'goals',
+    'tech_stack',
+    'constraints',
+    'thinking',
+    'instructions',
+    'output_format',
+    'deliverables',
+  ],
+  education: [
+    'role',
+    'context',
+    'goals',
+    'thinking',
+    'instructions',
+    'references',
+    'style',
+    'output_format',
+  ],
+  creative: [
+    'role',
+    'context',
+    'goals',
+    'style',
+    'instructions',
+    'references',
+    'output_format',
+    'deliverables',
+  ],
+  code_review: [
+    'role',
+    'context',
+    'goals',
+    'tech_stack',
+    'constraints',
+    'thinking',
+    'instructions',
+    'output_format',
+  ],
+  system_design: [
+    'role',
+    'context',
+    'goals',
+    'tech_stack',
+    'constraints',
+    'thinking',
+    'instructions',
+    'output_format',
+    'deliverables',
+  ],
   learning: ['role', 'context', 'goals', 'thinking', 'instructions', 'references', 'output_format'],
-  process: ['role', 'context', 'goals', 'constraints', 'thinking', 'instructions', 'output_format', 'deliverables'],
-  troubleshooting: ['role', 'context', 'goals', 'constraints', 'thinking', 'instructions', 'output_format'],
-  ux: ['role', 'context', 'goals', 'constraints', 'thinking', 'instructions', 'references', 'output_format', 'deliverables'],
-  ai_prompt: ['role', 'context', 'goals', 'thinking', 'instructions', 'references', 'output_format'],
-  data_analysis: ['role', 'context', 'goals', 'tech_stack', 'constraints', 'thinking', 'instructions', 'output_format', 'deliverables']
+  process: [
+    'role',
+    'context',
+    'goals',
+    'constraints',
+    'thinking',
+    'instructions',
+    'output_format',
+    'deliverables',
+  ],
+  troubleshooting: [
+    'role',
+    'context',
+    'goals',
+    'constraints',
+    'thinking',
+    'instructions',
+    'output_format',
+  ],
+  ux: [
+    'role',
+    'context',
+    'goals',
+    'constraints',
+    'thinking',
+    'instructions',
+    'references',
+    'output_format',
+    'deliverables',
+  ],
+  ai_prompt: [
+    'role',
+    'context',
+    'goals',
+    'thinking',
+    'instructions',
+    'references',
+    'output_format',
+  ],
+  data_analysis: [
+    'role',
+    'context',
+    'goals',
+    'tech_stack',
+    'constraints',
+    'thinking',
+    'instructions',
+    'output_format',
+    'deliverables',
+  ],
 }
 
 export const usePromptStore = defineStore('prompt', () => {
@@ -103,18 +204,18 @@ export const usePromptStore = defineStore('prompt', () => {
 
     // メタ情報
     category: 'business',
-    template_type: 'standard'
+    template_type: 'standard',
   })
 
   // Getters
   const generatedPrompt = computed(() => {
     let prompt = ''
     const category = formData.value.category as CategoryKey
-    
+
     // Constitutional AI原則に基づく出力順序
     const outputOrder = [
       'role',
-      'context', 
+      'context',
       'goals',
       'tech_stack',
       'constraints',
@@ -123,11 +224,11 @@ export const usePromptStore = defineStore('prompt', () => {
       'references',
       'style',
       'output_format',
-      'deliverables'
+      'deliverables',
     ]
 
     // 基本フィールドの出力
-    outputOrder.forEach(field => {
+    outputOrder.forEach((field) => {
       const value = formData.value[field as keyof PromptFormData]
       if (value && value.trim()) {
         const content = value.trim()
@@ -159,78 +260,78 @@ export const usePromptStore = defineStore('prompt', () => {
 ステークホルダー：
 期間：
 予算：`,
-      
+
       writing: `対象読者：
 文章の目的：
 文字数：
 トーン：
 構成：`,
-      
+
       tech: `プログラミング言語：
 フレームワーク：
 技術要件：
 環境：
 パフォーマンス要件：
 セキュリティ要件：`,
-      
+
       education: `受講者レベル：
 学習目標：
 前提知識：
 説明方法：
 チェックポイント：`,
-      
+
       creative: `クリエイティブ方向性：
 対象層：
 ブランドトーン：
 制約条件：
 インスピレーション源：`,
-      
+
       code_review: `レビュー対象：
 レビュー観点：
 コーディング標準：
 チーム状況：`,
-      
+
       system_design: `システム要件：
 スケーラビリティ要件：
 セキュリティ要件：
 運用要件：`,
-      
+
       learning: `学習対象：
 現在のスキルレベル：
 学習目標：
 時間制約：
 実践応用：`,
-      
+
       process: `現在のプロセス：
 問題点：
 チーム構成：
 技術環境：
 品質指標：`,
-      
+
       troubleshooting: `問題の概要：
 エラーログ：
 システム環境：
 最近の変更：
 ビジネスインパクト：`,
-      
+
       ux: `現在の指標：
 ユーザーの課題：
 対象ユーザー：
 競合分析：
 技術制約：`,
-      
+
       ai_prompt: `対象AIモデル：
 プロンプト目的：
 出力構造：
 エッジケース：`,
-      
+
       data_analysis: `分析対象データ：
 分析目的：
 使用ツール：
 出力形式：
-対象読者：`
+対象読者：`,
     }
-    
+
     return presets[category] || ''
   }
 
@@ -248,7 +349,7 @@ export const usePromptStore = defineStore('prompt', () => {
   }
 
   const resetForm = () => {
-    Object.keys(formData.value).forEach(key => {
+    Object.keys(formData.value).forEach((key) => {
       formData.value[key as keyof PromptFormData] = ''
     })
     // カテゴリーとテンプレートタイプは保持
@@ -302,14 +403,14 @@ function executePhase(phase) {
   // カテゴリー別のサンプルデータを生成
   const generateSampleData = () => {
     const category = formData.value.category as CategoryKey
-    
+
     // 共通フィールドのサンプル
     const commonSamples = {
       role: '経験豊富な専門家として',
       context: '現在の状況や背景を説明してください',
       goals: '達成したい目標を明確に設定してください',
       instructions: '具体的な指示や手順を記載してください',
-      output_format: 'マークダウン形式で構造化された回答'
+      output_format: 'マークダウン形式で構造化された回答',
     }
 
     // カテゴリー特化サンプル（必要なカテゴリーのみ定義）
@@ -319,14 +420,14 @@ function executePhase(phase) {
         context: '新規事業参入を検討している中小企業',
         goals: '市場分析を行い、参入戦略を策定する',
         thinking: 'SWOT分析と3C分析を実施し、リスク評価を含める',
-        instructions: '分析結果に基づいて、具体的な参入戦略を3つ提案してください'
+        instructions: '分析結果に基づいて、具体的な参入戦略を3つ提案してください',
       },
       writing: {
         role: '経験豊富な編集者・ライター',
         context: '企業のオウンドメディア記事作成',
         goals: 'SEOに配慮した読みやすい記事の執筆',
         style: '専門的だが親しみやすい文体',
-        instructions: '指定したテーマで1500字程度の記事を作成してください'
+        instructions: '指定したテーマで1500字程度の記事を作成してください',
       },
       tech: {
         role: 'シニアエンジニア（Python/FastAPI専門）',
@@ -334,21 +435,21 @@ function executePhase(phase) {
         goals: 'スケーラブルなAPI設計と実装',
         tech_stack: 'Python 3.11, FastAPI, PostgreSQL, Docker, AWS',
         constraints: 'レスポンス時間1秒以内、既存DB構造変更不可',
-        thinking: 'Clean Architectureを採用し、段階的移行を計画'
+        thinking: 'Clean Architectureを採用し、段階的移行を計画',
       },
       education: {
         role: '技術教育の専門家',
         context: '新入社員向けプログラミング研修',
         goals: '基礎から実践まで体系的に学習できる教材作成',
         thinking: '段階的学習と実践演習を組み合わせたカリキュラム',
-        instructions: '初心者でも理解できるよう、具体例を交えて説明してください'
+        instructions: '初心者でも理解できるよう、具体例を交えて説明してください',
       },
       creative: {
         role: 'シニアクリエイティブディレクター',
         context: '新ブランドのローンチキャンペーン',
         goals: 'ブランドアイデンティティの確立と認知度向上',
         style: 'モダンで親しみやすく、革新的なトーン',
-        references: '成功事例：Apple、Nike、Airbnbのブランディング戦略'
+        references: '成功事例：Apple、Nike、Airbnbのブランディング戦略',
       },
       code_review: {
         role: 'シニアソフトウェアエンジニア',
@@ -356,7 +457,7 @@ function executePhase(phase) {
         goals: 'コード品質向上とチームのスキルアップ',
         tech_stack: 'TypeScript, React, Node.js',
         thinking: 'セキュリティ、パフォーマンス、保守性の観点で評価',
-        instructions: 'コードの改善点と具体的な修正案を提示してください'
+        instructions: 'コードの改善点と具体的な修正案を提示してください',
       },
       system_design: {
         role: 'システムアーキテクト',
@@ -364,8 +465,8 @@ function executePhase(phase) {
         goals: 'スケーラブルで保守性の高いシステム設計',
         tech_stack: 'マイクロサービス、Kubernetes、AWS',
         constraints: '100万PV/日対応、99.9%可用性',
-        thinking: 'ドメイン駆動設計とイベント駆動アーキテクチャを採用'
-      }
+        thinking: 'ドメイン駆動設計とイベント駆動アーキテクチャを採用',
+      },
     }
 
     // 共通フィールドを設定
@@ -405,6 +506,6 @@ function executePhase(phase) {
     generateSampleData,
     // Constants
     CATEGORIES,
-    CATEGORY_SPECIALIZATION_TAGS
+    CATEGORY_SPECIALIZATION_TAGS,
   }
 })
