@@ -7,10 +7,21 @@ import { promptConfigs } from '@/configs/promptConfigs'
 
 const route = useRoute()
 
-// 現在のルートに基づいて設定を取得
+// 現在のルートに基づいて設定とメタ情報を取得
 const currentConfig = computed(() => {
   const routeName = route.name as string
-  return promptConfigs[routeName] || promptConfigs.business // デフォルトはbusiness
+  const config = promptConfigs[routeName] || promptConfigs.business // デフォルトはbusiness
+
+  // ルーターのメタ情報からタイトルとアイコンを取得（設定ファイルにないため）
+  const routeMeta = route.meta || {}
+  const title = (routeMeta.title as string) || 'ビジネス分析・戦略'
+  const icon = (routeMeta.icon as string) || '📊'
+
+  return {
+    ...config,
+    title,
+    icon
+  }
 })
 
 // 設定が見つからない場合のフォールバック
@@ -49,7 +60,7 @@ const configExists = computed(() => {
           <ul>
             <li v-for="(config, key) in promptConfigs" :key="key">
               <router-link :to="{ name: key }" class="error-link">
-                {{ config.icon }} {{ config.title }}
+                {{ key }}
               </router-link>
             </li>
           </ul>
