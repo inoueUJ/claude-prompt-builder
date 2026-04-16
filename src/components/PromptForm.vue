@@ -44,11 +44,22 @@ const groupedFields = computed(() => {
   return groups
 })
 
-// テキストエリアのサイズを自動調整
+// ⚡ Bolt Optimization: Prevent Layout Thrashing in textarea auto-resize
+// By batching the DOM style reset and read using requestAnimationFrame,
+// we prevent synchronous forced reflows during fast typing, eliminating UI lag.
 const autoResize = (event: Event) => {
   const textarea = event.target as HTMLTextAreaElement
-  textarea.style.height = 'auto'
-  textarea.style.height = textarea.scrollHeight + 'px'
+
+  requestAnimationFrame(() => {
+    // 1. Reset height to calculate true scrollHeight
+    textarea.style.height = 'auto'
+
+    // 2. Read scrollHeight (causes layout recalculation, but it's now batched)
+    const newHeight = textarea.scrollHeight
+
+    // 3. Write new height
+    textarea.style.height = newHeight + 'px'
+  })
 }
 </script>
 
