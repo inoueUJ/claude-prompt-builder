@@ -10,6 +10,8 @@ export interface FormField {
 }
 
 export interface PromptConfig {
+  title?: string
+  icon?: string
   fields: FormField[]
 }
 
