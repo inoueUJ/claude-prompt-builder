@@ -6,13 +6,15 @@ import { promptRoutes } from '@/router'
 const router = useRouter()
 const route = useRoute()
 
-const tabs = computed(() =>
-  promptRoutes.map((r) => ({
-    id: r.name as string,
-    icon: r.meta?.icon || '',
-    label: r.meta?.label || (r.meta?.title as string) || (r.name as string),
-  })),
-)
+// ⚡ Bolt Optimization: Replace computed property with static array
+// Since promptRoutes is a static array that never changes during runtime,
+// we don't need the overhead of Vue's reactivity system (computed) here.
+// This saves memory and unnecessary dependency tracking.
+const tabs = promptRoutes.map((r) => ({
+  id: r.name as string,
+  icon: r.meta?.icon || '',
+  label: r.meta?.label || (r.meta?.title as string) || (r.name as string),
+}))
 
 const currentTab = computed(() => route.name as string)
 
