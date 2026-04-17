@@ -207,28 +207,30 @@ export const usePromptStore = defineStore('prompt', () => {
     template_type: 'standard',
   })
 
+  // Constitutional AI原則に基づく出力順序
+  // ⚡ Bolt Optimization: Extracted static array outside of computed property
+  // Prevents array allocation/garbage collection on every keystroke during typing.
+  const OUTPUT_ORDER = [
+    'role',
+    'context',
+    'goals',
+    'tech_stack',
+    'constraints',
+    'thinking',
+    'instructions',
+    'references',
+    'style',
+    'output_format',
+    'deliverables',
+  ] as const
+
   // Getters
   const generatedPrompt = computed(() => {
     let prompt = ''
     const category = formData.value.category as CategoryKey
 
-    // Constitutional AI原則に基づく出力順序
-    const outputOrder = [
-      'role',
-      'context',
-      'goals',
-      'tech_stack',
-      'constraints',
-      'thinking',
-      'instructions',
-      'references',
-      'style',
-      'output_format',
-      'deliverables',
-    ]
-
     // 基本フィールドの出力
-    outputOrder.forEach((field) => {
+    OUTPUT_ORDER.forEach((field) => {
       const value = formData.value[field as keyof PromptFormData]
       if (value && value.trim()) {
         const content = value.trim()
