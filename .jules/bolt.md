@@ -4,3 +4,6 @@
 ## 2025-04-15 - Unnecessary reactivity in static components
 **Learning:** In Vue 3, computing static arrays that never change wastes reactivity overhead. `computed` is useful for tracking reactive dependency changes, but using it with static data imports from a router file only adds overhead without any benefit. Also, typing must strictly be updated whenever an interface expects newly referenced props (e.g. `title`, `icon`).
 **Action:** Replace `computed` functions with simple variable assignments (e.g., `const tabs = promptRoutes.map(...)`) when dealing with statically configured values that do not rely on reactive Vue state.
+## 2026-04-18 - Replacing string splitting and mapping with fast raw loops
+**Learning:** In scenarios involving repetitive string parsing (like evaluating text field inputs on every keystroke), creating intermediate data structures using `split()`, `filter()`, or `match()` with Regex can lead to unnecessary memory overhead and garbage collection pauses. Fast raw string manipulation (e.g. `indexOf` inside a `while` loop) is drastically faster and perfectly preserves logic like counting items on specific lines.
+**Action:** When performing simple string searches or counts, prefer `indexOf` combined with `while` loops over array conversion methods to boost performance, particularly in hot paths like Vue computed properties.
