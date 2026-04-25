@@ -4,3 +4,6 @@
 ## 2025-04-15 - Unnecessary reactivity in static components
 **Learning:** In Vue 3, computing static arrays that never change wastes reactivity overhead. `computed` is useful for tracking reactive dependency changes, but using it with static data imports from a router file only adds overhead without any benefit. Also, typing must strictly be updated whenever an interface expects newly referenced props (e.g. `title`, `icon`).
 **Action:** Replace `computed` functions with simple variable assignments (e.g., `const tabs = promptRoutes.map(...)`) when dealing with statically configured values that do not rely on reactive Vue state.
+## 2025-04-25 - [Vue Form Re-renders with Global Store]
+**Learning:** In Vue forms backed directly by a global Pinia store, typing in one field updates the store, causing the entire form list (rendered by `v-for`) to re-evaluate and re-render. `v-memo` is essential here to prevent VNode diffing for unchanged fields. Also, `vue/valid-v-memo` ESLint rule flags `v-memo` used on the same element as `v-for`, even though Vue 3 docs say they MUST be on the same element for list item memoization.
+**Action:** Use `v-memo="[dependency]"` on `v-for` elements to memoize items and disable the `vue/valid-v-memo` ESLint rule if it creates a false positive to ensure performance.

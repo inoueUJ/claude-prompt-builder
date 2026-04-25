@@ -207,28 +207,29 @@ export const usePromptStore = defineStore('prompt', () => {
     template_type: 'standard',
   })
 
+  // ⚡ Bolt Optimization: Hoist static array to prevent memory allocation on every keystroke
+  // Constitutional AI原則に基づく出力順序
+  const OUTPUT_ORDER = [
+    'role',
+    'context',
+    'goals',
+    'tech_stack',
+    'constraints',
+    'thinking',
+    'instructions',
+    'references',
+    'style',
+    'output_format',
+    'deliverables',
+  ]
+
   // Getters
   const generatedPrompt = computed(() => {
     let prompt = ''
     const category = formData.value.category as CategoryKey
 
-    // Constitutional AI原則に基づく出力順序
-    const outputOrder = [
-      'role',
-      'context',
-      'goals',
-      'tech_stack',
-      'constraints',
-      'thinking',
-      'instructions',
-      'references',
-      'style',
-      'output_format',
-      'deliverables',
-    ]
-
     // 基本フィールドの出力
-    outputOrder.forEach((field) => {
+    OUTPUT_ORDER.forEach((field) => {
       const value = formData.value[field as keyof PromptFormData]
       if (value && value.trim()) {
         const content = value.trim()
@@ -252,87 +253,88 @@ export const usePromptStore = defineStore('prompt', () => {
     return CATEGORY_VISIBLE_FIELDS[category] || ['role', 'context', 'instructions', 'output_format']
   })
 
-  // カテゴリー別のプリセット特化情報を取得
-  const getPresetSpecialization = (category: CategoryKey): string => {
-    const presets: Record<CategoryKey, string> = {
-      business: `分析対象：
+  // ⚡ Bolt Optimization: Hoist static object outside to prevent memory allocation on every category change
+  const PRESETS: Record<CategoryKey, string> = {
+    business: `分析対象：
 分析手法：SWOT分析、3C分析
 ステークホルダー：
 期間：
 予算：`,
 
-      writing: `対象読者：
+    writing: `対象読者：
 文章の目的：
 文字数：
 トーン：
 構成：`,
 
-      tech: `プログラミング言語：
+    tech: `プログラミング言語：
 フレームワーク：
 技術要件：
 環境：
 パフォーマンス要件：
 セキュリティ要件：`,
 
-      education: `受講者レベル：
+    education: `受講者レベル：
 学習目標：
 前提知識：
 説明方法：
 チェックポイント：`,
 
-      creative: `クリエイティブ方向性：
+    creative: `クリエイティブ方向性：
 対象層：
 ブランドトーン：
 制約条件：
 インスピレーション源：`,
 
-      code_review: `レビュー対象：
+    code_review: `レビュー対象：
 レビュー観点：
 コーディング標準：
 チーム状況：`,
 
-      system_design: `システム要件：
+    system_design: `システム要件：
 スケーラビリティ要件：
 セキュリティ要件：
 運用要件：`,
 
-      learning: `学習対象：
+    learning: `学習対象：
 現在のスキルレベル：
 学習目標：
 時間制約：
 実践応用：`,
 
-      process: `現在のプロセス：
+    process: `現在のプロセス：
 問題点：
 チーム構成：
 技術環境：
 品質指標：`,
 
-      troubleshooting: `問題の概要：
+    troubleshooting: `問題の概要：
 エラーログ：
 システム環境：
 最近の変更：
 ビジネスインパクト：`,
 
-      ux: `現在の指標：
+    ux: `現在の指標：
 ユーザーの課題：
 対象ユーザー：
 競合分析：
 技術制約：`,
 
-      ai_prompt: `対象AIモデル：
+    ai_prompt: `対象AIモデル：
 プロンプト目的：
 出力構造：
 エッジケース：`,
 
-      data_analysis: `分析対象データ：
+    data_analysis: `分析対象データ：
 分析目的：
 使用ツール：
 出力形式：
 対象読者：`,
-    }
+  }
 
-    return presets[category] || ''
+  // カテゴリー別のプリセット特化情報を取得
+  const getPresetSpecialization = (category: CategoryKey): string => {
+    return PRESETS[category] || ''
   }
 
   // Actions
