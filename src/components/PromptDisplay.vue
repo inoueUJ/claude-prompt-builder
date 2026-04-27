@@ -13,7 +13,26 @@ const promptQualityScore = computed(() => {
   const prompt = promptStore.generatedPrompt
   if (!prompt) return 0
 
-  const tagCount = prompt.split('\n').filter((line) => line.includes('<')).length
+  // ⚡ Bolt Optimization: Replace split().filter() with zero-allocation while loop
+  // The original string.split('\n').filter(...) logic creates multiple arrays and string
+  // fragments on every single keystroke, causing significant memory churn.
+  // Using indexOf performs the same function with zero allocations.
+  let tagCount = 0
+  let startIndex = 0
+
+  while (true) {
+    // 閉じタグ以外のタグの開始をカウントする大まかなロジック（元のロジックと等価）
+    // 元のロジックは line.includes('<') で各行をチェックしていました
+    const index = prompt.indexOf('<', startIndex)
+    if (index === -1) break
+
+    // 次の行までスキップ (元の split('\n') と同じように行ごとにカウント)
+    tagCount++
+    const nextLineIndex = prompt.indexOf('\n', index)
+    if (nextLineIndex === -1) break
+    startIndex = nextLineIndex + 1
+  }
+
   return Math.min(5, Math.floor(tagCount / 2))
 })
 
