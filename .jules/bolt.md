@@ -4,3 +4,6 @@
 ## 2025-04-15 - Unnecessary reactivity in static components
 **Learning:** In Vue 3, computing static arrays that never change wastes reactivity overhead. `computed` is useful for tracking reactive dependency changes, but using it with static data imports from a router file only adds overhead without any benefit. Also, typing must strictly be updated whenever an interface expects newly referenced props (e.g. `title`, `icon`).
 **Action:** Replace `computed` functions with simple variable assignments (e.g., `const tabs = promptRoutes.map(...)`) when dealing with statically configured values that do not rely on reactive Vue state.
+## 2025-04-27 - Vue Computed Property Array Allocation
+**Learning:** In Vue, computed properties that generate strings from complex state objects evaluate frequently. Putting static arrays like `outputOrder` inside the computed property block, or using chain methods like `.split('\n').filter(...)` creates new arrays and closures on every evaluation, causing garbage collection overhead.
+**Action:** Always move static arrays outside the `computed()` function block. For string analysis inside computed properties (like counting tags), prefer a `while` loop with `indexOf` to avoid array memory allocations on keystrokes.
