@@ -6,15 +6,33 @@ import { Copy, RotateCcw, CheckCircle } from 'lucide-vue-next'
 const promptStore = usePromptStore()
 const copySuccess = ref(false)
 
-// ⚡ Bolt Optimization: Memoize expensive quality score calculation
-// Previously, the string split/filter logic was duplicated 7 times in the template
-// and evaluated on every keystroke. Using computed caches the result.
+// ⚡ Bolt Optimization: O(1) state calculation instead of O(N) string manipulation
+// Previously, the prompt string was split and filtered to count tags on every state change,
+// allocating objects and causing garbage collection pressure for large prompts.
+// Now we simply count the non-empty form fields that generate tags.
 const promptQualityScore = computed(() => {
-  const prompt = promptStore.generatedPrompt
-  if (!prompt) return 0
+  if (!promptStore.generatedPrompt) return 0
 
-  const tagCount = prompt.split('\n').filter((line) => line.includes('<')).length
-  return Math.min(5, Math.floor(tagCount / 2))
+  const formData = promptStore.formData
+  const fieldsToCheck = [
+    'role', 'context', 'goals', 'tech_stack', 'constraints',
+    'thinking', 'instructions', 'references', 'style',
+    'output_format', 'deliverables'
+  ]
+
+  let filledFields = 0
+  fieldsToCheck.forEach((field) => {
+    const value = formData[field as keyof typeof formData]
+    if (value && typeof value === 'string' && value.trim()) {
+      filledFields++
+    }
+  })
+
+  if (formData.specialization && formData.specialization.trim()) {
+    filledFields++
+  }
+
+  return Math.min(5, filledFields)
 })
 
 const handleCopy = async () => {
