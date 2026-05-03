@@ -25,9 +25,11 @@ const updateField = (field: keyof PromptFormData, value: string) => {
   promptStore.updateField(field, value)
 }
 
-const getFieldValue = (field: keyof PromptFormData) => {
-  return promptStore.formData[field]
-}
+// ⚡ Bolt Optimization: Removed getFieldValue method.
+// Calling a method in the template (e.g., :value="getFieldValue(field.key)")
+// executes on every single component re-render (like on every keystroke in any input).
+// Accessing the reactive store property directly (:value="promptStore.formData[field.key]")
+// prevents these redundant method invocations and improves rendering performance.
 
 // フィールドをグループ別に分類
 const groupedFields = computed(() => {
@@ -76,7 +78,7 @@ const autoResize = (event: Event) => {
 
             <textarea
               v-if="field.type === 'textarea'"
-              :value="getFieldValue(field.key)"
+              :value="promptStore.formData[field.key]"
               @input="
                 (e) => {
                   updateField(field.key, (e.target as HTMLTextAreaElement).value)
@@ -92,7 +94,7 @@ const autoResize = (event: Event) => {
             <input
               v-else
               type="text"
-              :value="getFieldValue(field.key)"
+              :value="promptStore.formData[field.key]"
               @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
               :placeholder="field.placeholder"
               class="form-input"
