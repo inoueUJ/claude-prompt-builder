@@ -6,14 +6,17 @@ import { Copy, RotateCcw, CheckCircle } from 'lucide-vue-next'
 const promptStore = usePromptStore()
 const copySuccess = ref(false)
 
-// ⚡ Bolt Optimization: Memoize expensive quality score calculation
+// ⚡ Bolt Optimization: Memoize and optimize expensive quality score calculation
 // Previously, the string split/filter logic was duplicated 7 times in the template
 // and evaluated on every keystroke. Using computed caches the result.
+// ⚡ Bolt Optimization: Replaced expensive O(N) array allocation (.split().filter())
+// with a regex match. Using /^.*<.*$/gm precisely matches the original logic
+// (counting lines containing '<') without allocating large intermediate arrays.
 const promptQualityScore = computed(() => {
   const prompt = promptStore.generatedPrompt
   if (!prompt) return 0
 
-  const tagCount = prompt.split('\n').filter((line) => line.includes('<')).length
+  const tagCount = prompt.match(/^.*<.*$/gm)?.length || 0
   return Math.min(5, Math.floor(tagCount / 2))
 })
 
