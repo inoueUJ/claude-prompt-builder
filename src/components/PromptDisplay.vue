@@ -9,12 +9,25 @@ const copySuccess = ref(false)
 // ⚡ Bolt Optimization: Memoize expensive quality score calculation
 // Previously, the string split/filter logic was duplicated 7 times in the template
 // and evaluated on every keystroke. Using computed caches the result.
+// Added O(1) early-exit scanning to avoid expensive array creation and full string traversal.
 const promptQualityScore = computed(() => {
   const prompt = promptStore.generatedPrompt
   if (!prompt) return 0
 
-  const tagCount = prompt.split('\n').filter((line) => line.includes('<')).length
-  return Math.min(5, Math.floor(tagCount / 2))
+  let tagCount = 0
+  let pos = 0
+  // Since max score is 5, we only need to find at most 10 lines with tags
+  while (tagCount < 10 && (pos = prompt.indexOf('<', pos)) !== -1) {
+    tagCount++
+    // Move pos to the start of the next line to count lines, not total tags
+    const nextLinePos = prompt.indexOf('\n', pos)
+    if (nextLinePos === -1) {
+      break
+    }
+    pos = nextLinePos + 1
+  }
+
+  return Math.floor(tagCount / 2) // Max tagCount is 10, so max score is 5
 })
 
 const handleCopy = async () => {
