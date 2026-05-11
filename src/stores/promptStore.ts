@@ -62,6 +62,27 @@ const CATEGORY_SPECIALIZATION_TAGS: Record<CategoryKey, string> = {
   data_analysis: 'analysis_requirements',
 }
 
+// ⚡ Bolt Optimization: Define fallback array outside of computed property
+// This prevents creating a new array reference every time the fallback is used,
+// which could trigger unnecessary updates in components depending on visibleFields.
+const DEFAULT_VISIBLE_FIELDS = ['role', 'context', 'instructions', 'output_format']
+
+// ⚡ Bolt Optimization: Define static array outside of computed property
+// Constitutional AI原則に基づく出力順序
+const OUTPUT_ORDER = [
+  'role',
+  'context',
+  'goals',
+  'tech_stack',
+  'constraints',
+  'thinking',
+  'instructions',
+  'references',
+  'style',
+  'output_format',
+  'deliverables',
+]
+
 // カテゴリー別表示フィールド定義
 const CATEGORY_VISIBLE_FIELDS: Record<CategoryKey, string[]> = {
   business: [
@@ -212,23 +233,8 @@ export const usePromptStore = defineStore('prompt', () => {
     let prompt = ''
     const category = formData.value.category as CategoryKey
 
-    // Constitutional AI原則に基づく出力順序
-    const outputOrder = [
-      'role',
-      'context',
-      'goals',
-      'tech_stack',
-      'constraints',
-      'thinking',
-      'instructions',
-      'references',
-      'style',
-      'output_format',
-      'deliverables',
-    ]
-
     // 基本フィールドの出力
-    outputOrder.forEach((field) => {
+    OUTPUT_ORDER.forEach((field) => {
       const value = formData.value[field as keyof PromptFormData]
       if (value && value.trim()) {
         const content = value.trim()
@@ -249,7 +255,7 @@ export const usePromptStore = defineStore('prompt', () => {
   // 現在のカテゴリーで表示すべきフィールドを取得
   const visibleFields = computed(() => {
     const category = formData.value.category as CategoryKey
-    return CATEGORY_VISIBLE_FIELDS[category] || ['role', 'context', 'instructions', 'output_format']
+    return CATEGORY_VISIBLE_FIELDS[category] || DEFAULT_VISIBLE_FIELDS
   })
 
   // カテゴリー別のプリセット特化情報を取得
