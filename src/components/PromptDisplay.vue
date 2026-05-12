@@ -9,11 +9,25 @@ const copySuccess = ref(false)
 // ⚡ Bolt Optimization: Memoize expensive quality score calculation
 // Previously, the string split/filter logic was duplicated 7 times in the template
 // and evaluated on every keystroke. Using computed caches the result.
+// Further optimized by replacing expensive split() and filter() with a fast indexOf loop,
+// reducing string allocation overhead and avoiding garbage collection pauses during typing.
 const promptQualityScore = computed(() => {
   const prompt = promptStore.generatedPrompt
   if (!prompt) return 0
 
-  const tagCount = prompt.split('\n').filter((line) => line.includes('<')).length
+  let tagCount = 0
+  let pos = prompt.indexOf('<')
+  while (pos !== -1) {
+    tagCount++
+
+    // Find the end of the current line to skip any other '<' on the same line
+    const nextNewline = prompt.indexOf('\n', pos)
+    if (nextNewline === -1) {
+      break
+    }
+    pos = prompt.indexOf('<', nextNewline)
+  }
+
   return Math.min(5, Math.floor(tagCount / 2))
 })
 
