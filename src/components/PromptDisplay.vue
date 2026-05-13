@@ -13,7 +13,22 @@ const promptQualityScore = computed(() => {
   const prompt = promptStore.generatedPrompt
   if (!prompt) return 0
 
-  const tagCount = prompt.split('\n').filter((line) => line.includes('<')).length
+  // ⚡ Bolt Optimization: Use indexOf instead of split/filter
+  // Replaces expensive string allocations and multiple iterations (O(N) with high constant factor)
+  // with a zero-allocation, single-pass scan. Reduces GC pressure significantly
+  // since this computed property evaluates frequently as users type.
+  let tagCount = 0
+  let pos = 0
+  while (true) {
+    const tagPos = prompt.indexOf('<', pos)
+    if (tagPos === -1) break
+    tagCount++
+
+    const newlinePos = prompt.indexOf('\n', tagPos)
+    if (newlinePos === -1) break
+    pos = newlinePos + 1
+  }
+
   return Math.min(5, Math.floor(tagCount / 2))
 })
 
