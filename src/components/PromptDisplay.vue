@@ -13,7 +13,9 @@ const promptQualityScore = computed(() => {
   const prompt = promptStore.generatedPrompt
   if (!prompt) return 0
 
-  const tagCount = prompt.split('\n').filter((line) => line.includes('<')).length
+  // ⚡ Bolt Optimization: Replace split().filter() with regex match for better performance
+  // Avoids creating multiple temporary arrays on every keystroke for large prompts
+  const tagCount = (prompt.match(/</g) || []).length
   return Math.min(5, Math.floor(tagCount / 2))
 })
 
