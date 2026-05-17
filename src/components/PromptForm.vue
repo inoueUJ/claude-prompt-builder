@@ -21,13 +21,10 @@ interface Props {
 const props = defineProps<Props>()
 const promptStore = usePromptStore()
 
-const updateField = (field: keyof PromptFormData, value: string) => {
-  promptStore.updateField(field, value)
-}
-
-const getFieldValue = (field: keyof PromptFormData) => {
-  return promptStore.formData[field]
-}
+// ⚡ Bolt Optimization: Use v-model for better IME support
+// Replaced manual :value and @input bindings with v-model.
+// v-model defers state updates during IME composition (Japanese input),
+// preventing excessive reactive mutations and re-renders on every keystroke.
 
 // フィールドをグループ別に分類
 const groupedFields = computed(() => {
@@ -76,13 +73,8 @@ const autoResize = (event: Event) => {
 
             <textarea
               v-if="field.type === 'textarea'"
-              :value="getFieldValue(field.key)"
-              @input="
-                (e) => {
-                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
-                  autoResize(e)
-                }
-              "
+              v-model="promptStore.formData[field.key]"
+              @input="autoResize"
               @keydown.enter.stop
               :placeholder="field.placeholder"
               class="form-textarea auto-resize"
@@ -92,8 +84,7 @@ const autoResize = (event: Event) => {
             <input
               v-else
               type="text"
-              :value="getFieldValue(field.key)"
-              @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
+              v-model="promptStore.formData[field.key]"
               :placeholder="field.placeholder"
               class="form-input"
             />
