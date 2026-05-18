@@ -21,13 +21,18 @@ interface Props {
 const props = defineProps<Props>()
 const promptStore = usePromptStore()
 
-const updateField = (field: keyof PromptFormData, value: string) => {
-  promptStore.updateField(field, value)
-}
-
-const getFieldValue = (field: keyof PromptFormData) => {
-  return promptStore.formData[field]
-}
+// ⚡ Bolt Optimization: Use v-model to defer updates during Japanese IME composition
+// Previously, :value and @input were used, which triggers reactivity on every keystroke.
+// v-model natively handles IME composition.
+// We use a Proxy to intercept v-model's state mutations and route them through the Pinia store's action (updateField)
+// to maintain proper state encapsulation while benefiting from v-model's IME handling.
+const formFields = new Proxy({} as PromptFormData, {
+  get: (_, prop: keyof PromptFormData) => promptStore.formData[prop],
+  set: (_, prop: keyof PromptFormData, value: string) => {
+    promptStore.updateField(prop, value)
+    return true
+  }
+})
 
 // フィールドをグループ別に分類
 const groupedFields = computed(() => {
@@ -76,13 +81,8 @@ const autoResize = (event: Event) => {
 
             <textarea
               v-if="field.type === 'textarea'"
-              :value="getFieldValue(field.key)"
-              @input="
-                (e) => {
-                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
-                  autoResize(e)
-                }
-              "
+              v-model="formFields[field.key]"
+              @input="autoResize"
               @keydown.enter.stop
               :placeholder="field.placeholder"
               class="form-textarea auto-resize"
@@ -92,8 +92,7 @@ const autoResize = (event: Event) => {
             <input
               v-else
               type="text"
-              :value="getFieldValue(field.key)"
-              @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
+              v-model="formFields[field.key]"
               :placeholder="field.placeholder"
               class="form-input"
             />
