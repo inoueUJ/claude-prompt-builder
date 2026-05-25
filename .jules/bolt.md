@@ -4,3 +4,6 @@
 ## 2025-04-15 - Unnecessary reactivity in static components
 **Learning:** In Vue 3, computing static arrays that never change wastes reactivity overhead. `computed` is useful for tracking reactive dependency changes, but using it with static data imports from a router file only adds overhead without any benefit. Also, typing must strictly be updated whenever an interface expects newly referenced props (e.g. `title`, `icon`).
 **Action:** Replace `computed` functions with simple variable assignments (e.g., `const tabs = promptRoutes.map(...)`) when dealing with statically configured values that do not rely on reactive Vue state.
+## 2025-05-15 - IME composition thrashing in Vue 3 inputs
+**Learning:** Manual `:value` and `@input` event bindings for text inputs can cause excessive state updates and re-renders during IME (Input Method Editor) composition (e.g., when typing Japanese), potentially breaking the composition flow. Vue's native `v-model` directive is internally optimized to buffer updates and defer state changes until the `compositionend` event is fired.
+**Action:** Always prefer `v-model` over manual `:value` and `@input` bindings for text inputs, especially in applications heavily used by IME users.
