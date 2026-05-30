@@ -25,6 +25,24 @@ const updateField = (field: keyof PromptFormData, value: string) => {
   promptStore.updateField(field, value)
 }
 
+// ⚡ Bolt: Track composition state to prevent excessive store updates during IME composition
+const isComposing = { value: false }
+
+const handleCompositionStart = () => {
+  isComposing.value = true
+}
+
+const handleCompositionEnd = (field: keyof PromptFormData, event: Event) => {
+  isComposing.value = false
+  updateField(field, (event.target as HTMLInputElement | HTMLTextAreaElement).value)
+}
+
+const handleInput = (field: keyof PromptFormData, event: Event) => {
+  if (!isComposing.value) {
+    updateField(field, (event.target as HTMLInputElement | HTMLTextAreaElement).value)
+  }
+}
+
 const getFieldValue = (field: keyof PromptFormData) => {
   return promptStore.formData[field]
 }
@@ -77,9 +95,16 @@ const autoResize = (event: Event) => {
             <textarea
               v-if="field.type === 'textarea'"
               :value="getFieldValue(field.key)"
+              @compositionstart="handleCompositionStart"
+              @compositionend="
+                (e) => {
+                  handleCompositionEnd(field.key, e)
+                  autoResize(e)
+                }
+              "
               @input="
                 (e) => {
-                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
+                  handleInput(field.key, e)
                   autoResize(e)
                 }
               "
@@ -93,7 +118,9 @@ const autoResize = (event: Event) => {
               v-else
               type="text"
               :value="getFieldValue(field.key)"
-              @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
+              @compositionstart="handleCompositionStart"
+              @compositionend="(e) => handleCompositionEnd(field.key, e)"
+              @input="(e) => handleInput(field.key, e)"
               :placeholder="field.placeholder"
               class="form-input"
             />
