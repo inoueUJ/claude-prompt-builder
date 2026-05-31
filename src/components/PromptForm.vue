@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { usePromptStore } from '@/stores/promptStore'
 import type { PromptFormData } from '@/stores/promptStore'
 
@@ -27,6 +27,21 @@ const updateField = (field: keyof PromptFormData, value: string) => {
 
 const getFieldValue = (field: keyof PromptFormData) => {
   return promptStore.formData[field]
+}
+
+const isComposing = ref(false)
+
+const handleCompositionStart = () => {
+  isComposing.value = true
+}
+
+const handleCompositionEnd = (field: keyof PromptFormData, event: Event) => {
+  isComposing.value = false
+  const target = event.target as HTMLInputElement | HTMLTextAreaElement
+  updateField(field, target.value)
+  if (target.tagName === 'TEXTAREA') {
+    autoResize(event)
+  }
 }
 
 // フィールドをグループ別に分類
@@ -74,11 +89,15 @@ const autoResize = (event: Event) => {
               <span v-if="field.required" class="required-indicator">*</span>
             </label>
 
+            <!-- ⚡ Bolt: Defer state updates during IME composition to prevent excessive store mutations and re-renders -->
             <textarea
               v-if="field.type === 'textarea'"
               :value="getFieldValue(field.key)"
+              @compositionstart="handleCompositionStart"
+              @compositionend="(e) => handleCompositionEnd(field.key, e)"
               @input="
                 (e) => {
+                  if (isComposing) return
                   updateField(field.key, (e.target as HTMLTextAreaElement).value)
                   autoResize(e)
                 }
@@ -93,7 +112,12 @@ const autoResize = (event: Event) => {
               v-else
               type="text"
               :value="getFieldValue(field.key)"
-              @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
+              @compositionstart="handleCompositionStart"
+              @compositionend="(e) => handleCompositionEnd(field.key, e)"
+              @input="(e) => {
+                if (isComposing) return
+                updateField(field.key, (e.target as HTMLInputElement).value)
+              }"
               :placeholder="field.placeholder"
               class="form-input"
             />
