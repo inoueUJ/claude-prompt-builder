@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { usePromptStore } from '@/stores/promptStore'
 import type { PromptFormData } from '@/stores/promptStore'
 
@@ -27,6 +27,25 @@ const updateField = (field: keyof PromptFormData, value: string) => {
 
 const getFieldValue = (field: keyof PromptFormData) => {
   return promptStore.formData[field]
+}
+
+// ⚡ Bolt Optimization: Handle IME composition for Japanese input
+// Prevent excessive re-renders and store updates during Japanese IME composition.
+const isComposing = ref(false)
+
+const onCompositionStart = () => {
+  isComposing.value = true
+}
+
+const onCompositionEnd = (field: keyof PromptFormData, event: Event) => {
+  isComposing.value = false
+  updateField(field, (event.target as HTMLInputElement | HTMLTextAreaElement).value)
+}
+
+const onInput = (field: keyof PromptFormData, event: Event) => {
+  if (!isComposing.value) {
+    updateField(field, (event.target as HTMLInputElement | HTMLTextAreaElement).value)
+  }
 }
 
 // フィールドをグループ別に分類
@@ -79,10 +98,12 @@ const autoResize = (event: Event) => {
               :value="getFieldValue(field.key)"
               @input="
                 (e) => {
-                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
+                  onInput(field.key, e)
                   autoResize(e)
                 }
               "
+              @compositionstart="onCompositionStart"
+              @compositionend="onCompositionEnd(field.key, $event)"
               @keydown.enter.stop
               :placeholder="field.placeholder"
               class="form-textarea auto-resize"
@@ -93,7 +114,9 @@ const autoResize = (event: Event) => {
               v-else
               type="text"
               :value="getFieldValue(field.key)"
-              @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
+              @input="onInput(field.key, $event)"
+              @compositionstart="onCompositionStart"
+              @compositionend="onCompositionEnd(field.key, $event)"
               :placeholder="field.placeholder"
               class="form-input"
             />
