@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { usePromptStore } from '@/stores/promptStore'
 import type { PromptFormData } from '@/stores/promptStore'
 
@@ -44,6 +44,31 @@ const groupedFields = computed(() => {
   return groups
 })
 
+// ⚡ Bolt Optimization: IME Composition Tracking
+// For Japanese users, emitting updates on every keystroke during composition
+// causes excessive Vue reactivity and re-renders, impacting performance.
+// By tracking composition state, we defer Pinia updates until the composition is finalized.
+const isComposing = ref(false)
+
+const handleCompositionStart = () => {
+  isComposing.value = true
+}
+
+const handleCompositionEnd = (field: keyof PromptFormData, event: Event) => {
+  isComposing.value = false
+  const target = event.target as HTMLInputElement | HTMLTextAreaElement
+  updateField(field, target.value)
+}
+
+const handleInput = (field: keyof PromptFormData, event: Event, isTextarea = false) => {
+  if (isTextarea) {
+    autoResize(event)
+  }
+  if (isComposing.value) return
+  const target = event.target as HTMLInputElement | HTMLTextAreaElement
+  updateField(field, target.value)
+}
+
 // テキストエリアのサイズを自動調整
 const autoResize = (event: Event) => {
   const textarea = event.target as HTMLTextAreaElement
@@ -77,12 +102,9 @@ const autoResize = (event: Event) => {
             <textarea
               v-if="field.type === 'textarea'"
               :value="getFieldValue(field.key)"
-              @input="
-                (e) => {
-                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
-                  autoResize(e)
-                }
-              "
+              @compositionstart="handleCompositionStart"
+              @compositionend="(e) => handleCompositionEnd(field.key, e)"
+              @input="(e) => handleInput(field.key, e, true)"
               @keydown.enter.stop
               :placeholder="field.placeholder"
               class="form-textarea auto-resize"
@@ -93,7 +115,9 @@ const autoResize = (event: Event) => {
               v-else
               type="text"
               :value="getFieldValue(field.key)"
-              @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
+              @compositionstart="handleCompositionStart"
+              @compositionend="(e) => handleCompositionEnd(field.key, e)"
+              @input="(e) => handleInput(field.key, e, false)"
               :placeholder="field.placeholder"
               class="form-input"
             />
