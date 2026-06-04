@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { usePromptStore } from '@/stores/promptStore'
 import type { PromptFormData } from '@/stores/promptStore'
 
@@ -50,6 +50,11 @@ const autoResize = (event: Event) => {
   textarea.style.height = 'auto'
   textarea.style.height = textarea.scrollHeight + 'px'
 }
+
+// ⚡ Bolt Optimization: IME Composition Handling
+// Track if the user is currently using an Input Method Editor (IME)
+// like Japanese input.
+const isComposing = ref(false)
 </script>
 
 <template>
@@ -74,13 +79,22 @@ const autoResize = (event: Event) => {
               <span v-if="field.required" class="required-indicator">*</span>
             </label>
 
+            <!-- ⚡ Bolt Optimization: Defer Pinia mutations during IME composition to prevent unnecessary re-renders on every keystroke -->
             <textarea
               v-if="field.type === 'textarea'"
               :value="getFieldValue(field.key)"
+              @compositionstart="isComposing = true"
+              @compositionend="
+                (e) => {
+                  isComposing = false
+                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
+                }
+              "
               @input="
                 (e) => {
-                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
                   autoResize(e)
+                  if (isComposing) return
+                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
                 }
               "
               @keydown.enter.stop
@@ -89,11 +103,24 @@ const autoResize = (event: Event) => {
               rows="3"
             />
 
+            <!-- ⚡ Bolt Optimization: Defer Pinia mutations during IME composition -->
             <input
               v-else
               type="text"
               :value="getFieldValue(field.key)"
-              @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
+              @compositionstart="isComposing = true"
+              @compositionend="
+                (e) => {
+                  isComposing = false
+                  updateField(field.key, (e.target as HTMLInputElement).value)
+                }
+              "
+              @input="
+                (e) => {
+                  if (isComposing) return
+                  updateField(field.key, (e.target as HTMLInputElement).value)
+                }
+              "
               :placeholder="field.placeholder"
               class="form-input"
             />
