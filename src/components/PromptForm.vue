@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { usePromptStore } from '@/stores/promptStore'
 import type { PromptFormData } from '@/stores/promptStore'
 
@@ -50,6 +50,13 @@ const autoResize = (event: Event) => {
   textarea.style.height = 'auto'
   textarea.style.height = textarea.scrollHeight + 'px'
 }
+
+const isComposing = ref(false)
+
+const handleCompositionEnd = (fieldKey: keyof PromptFormData, event: Event) => {
+  isComposing.value = false
+  updateField(fieldKey, (event.target as HTMLInputElement | HTMLTextAreaElement).value)
+}
 </script>
 
 <template>
@@ -74,12 +81,17 @@ const autoResize = (event: Event) => {
               <span v-if="field.required" class="required-indicator">*</span>
             </label>
 
+            <!-- ⚡ Bolt: Defer store updates during IME composition to prevent excessive re-renders -->
             <textarea
               v-if="field.type === 'textarea'"
               :value="getFieldValue(field.key)"
+              @compositionstart="isComposing = true"
+              @compositionend="(e) => handleCompositionEnd(field.key, e)"
               @input="
                 (e) => {
-                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
+                  if (!isComposing) {
+                    updateField(field.key, (e.target as HTMLTextAreaElement).value)
+                  }
                   autoResize(e)
                 }
               "
@@ -93,7 +105,15 @@ const autoResize = (event: Event) => {
               v-else
               type="text"
               :value="getFieldValue(field.key)"
-              @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
+              @compositionstart="isComposing = true"
+              @compositionend="(e) => handleCompositionEnd(field.key, e)"
+              @input="
+                (e) => {
+                  if (!isComposing) {
+                    updateField(field.key, (e.target as HTMLInputElement).value)
+                  }
+                }
+              "
               :placeholder="field.placeholder"
               class="form-input"
             />
