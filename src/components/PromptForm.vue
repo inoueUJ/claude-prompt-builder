@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { usePromptStore } from '@/stores/promptStore'
 import type { PromptFormData } from '@/stores/promptStore'
 
@@ -44,6 +44,19 @@ const groupedFields = computed(() => {
   return groups
 })
 
+// ⚡ Bolt Optimization: Defer state updates during IME composition to prevent excessive re-renders
+const isComposing = ref(false)
+
+const onCompositionStart = () => {
+  isComposing.value = true
+}
+
+const onCompositionEnd = (field: keyof PromptFormData, event: Event) => {
+  isComposing.value = false
+  const target = event.target as HTMLTextAreaElement | HTMLInputElement
+  updateField(field, target.value)
+}
+
 // テキストエリアのサイズを自動調整
 const autoResize = (event: Event) => {
   const textarea = event.target as HTMLTextAreaElement
@@ -77,10 +90,13 @@ const autoResize = (event: Event) => {
             <textarea
               v-if="field.type === 'textarea'"
               :value="getFieldValue(field.key)"
+              @compositionstart="onCompositionStart"
+              @compositionend="onCompositionEnd(field.key, $event)"
               @input="
                 (e) => {
-                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
                   autoResize(e)
+                  if (isComposing) return
+                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
                 }
               "
               @keydown.enter.stop
@@ -93,7 +109,14 @@ const autoResize = (event: Event) => {
               v-else
               type="text"
               :value="getFieldValue(field.key)"
-              @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
+              @compositionstart="onCompositionStart"
+              @compositionend="onCompositionEnd(field.key, $event)"
+              @input="
+                (e) => {
+                  if (isComposing) return
+                  updateField(field.key, (e.target as HTMLInputElement).value)
+                }
+              "
               :placeholder="field.placeholder"
               class="form-input"
             />
