@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { usePromptStore } from '@/stores/promptStore'
 import type { PromptFormData } from '@/stores/promptStore'
 
@@ -20,6 +20,22 @@ interface Props {
 
 const props = defineProps<Props>()
 const promptStore = usePromptStore()
+
+// ⚡ Bolt Optimization: Defer state updates during IME composition
+// For Japanese users relying on IMEs, emitting updates on every keystroke
+// causes excessive re-renders and can interrupt typing. We track the composition
+// state and only update the store when composition ends.
+const isComposing = ref(false)
+
+const handleCompositionStart = () => {
+  isComposing.value = true
+}
+
+const handleCompositionEnd = (e: Event, field: keyof PromptFormData) => {
+  isComposing.value = false
+  const target = e.target as HTMLInputElement | HTMLTextAreaElement
+  updateField(field, target.value)
+}
 
 const updateField = (field: keyof PromptFormData, value: string) => {
   promptStore.updateField(field, value)
@@ -77,10 +93,14 @@ const autoResize = (event: Event) => {
             <textarea
               v-if="field.type === 'textarea'"
               :value="getFieldValue(field.key)"
+              @compositionstart="handleCompositionStart"
+              @compositionend="(e) => handleCompositionEnd(e, field.key)"
               @input="
                 (e) => {
-                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
                   autoResize(e)
+                  if (!isComposing) {
+                    updateField(field.key, (e.target as HTMLTextAreaElement).value)
+                  }
                 }
               "
               @keydown.enter.stop
@@ -93,7 +113,13 @@ const autoResize = (event: Event) => {
               v-else
               type="text"
               :value="getFieldValue(field.key)"
-              @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
+              @compositionstart="handleCompositionStart"
+              @compositionend="(e) => handleCompositionEnd(e, field.key)"
+              @input="(e) => {
+                if (!isComposing) {
+                  updateField(field.key, (e.target as HTMLInputElement).value)
+                }
+              }"
               :placeholder="field.placeholder"
               class="form-input"
             />
