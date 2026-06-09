@@ -4,3 +4,6 @@
 ## 2025-04-15 - Unnecessary reactivity in static components
 **Learning:** In Vue 3, computing static arrays that never change wastes reactivity overhead. `computed` is useful for tracking reactive dependency changes, but using it with static data imports from a router file only adds overhead without any benefit. Also, typing must strictly be updated whenever an interface expects newly referenced props (e.g. `title`, `icon`).
 **Action:** Replace `computed` functions with simple variable assignments (e.g., `const tabs = promptRoutes.map(...)`) when dealing with statically configured values that do not rely on reactive Vue state.
+## 2025-05-15 - Unnecessary re-renders during Japanese IME composition
+**Learning:** For users relying on IMEs (e.g., Japanese text input), Vue triggers `@input` events on every keystroke during composition (e.g., typing romaji before converting to kanji). If the `@input` handler updates a reactive store, it causes a full re-render on every partial keystroke.
+**Action:** Use a ref `isComposing` paired with `@compositionstart` and `@compositionend` to track IME state. Early-return in the `@input` handler if `isComposing` is true to defer store mutations until composition completes. Ensure essential UI updates (like auto-resizing textareas) still fire regardless of the composition state.
