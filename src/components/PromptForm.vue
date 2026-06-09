@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { usePromptStore } from '@/stores/promptStore'
 import type { PromptFormData } from '@/stores/promptStore'
 
@@ -50,6 +50,32 @@ const autoResize = (event: Event) => {
   textarea.style.height = 'auto'
   textarea.style.height = textarea.scrollHeight + 'px'
 }
+
+// ⚡ Bolt Optimization: Defer state updates during IME composition to prevent excessive re-renders
+const isComposing = ref(false)
+
+const handleCompositionStart = () => {
+  isComposing.value = true
+}
+
+const handleCompositionEnd = (fieldKey: keyof PromptFormData, event: Event) => {
+  isComposing.value = false
+  const target = event.target as HTMLInputElement | HTMLTextAreaElement
+  updateField(fieldKey, target.value)
+}
+
+const handleTextareaInput = (fieldKey: keyof PromptFormData, event: Event) => {
+  autoResize(event)
+  if (isComposing.value) return
+  const target = event.target as HTMLTextAreaElement
+  updateField(fieldKey, target.value)
+}
+
+const handleTextInput = (fieldKey: keyof PromptFormData, event: Event) => {
+  if (isComposing.value) return
+  const target = event.target as HTMLInputElement
+  updateField(fieldKey, target.value)
+}
 </script>
 
 <template>
@@ -77,12 +103,9 @@ const autoResize = (event: Event) => {
             <textarea
               v-if="field.type === 'textarea'"
               :value="getFieldValue(field.key)"
-              @input="
-                (e) => {
-                  updateField(field.key, (e.target as HTMLTextAreaElement).value)
-                  autoResize(e)
-                }
-              "
+              @compositionstart="handleCompositionStart"
+              @compositionend="handleCompositionEnd(field.key, $event)"
+              @input="handleTextareaInput(field.key, $event)"
               @keydown.enter.stop
               :placeholder="field.placeholder"
               class="form-textarea auto-resize"
@@ -93,7 +116,9 @@ const autoResize = (event: Event) => {
               v-else
               type="text"
               :value="getFieldValue(field.key)"
-              @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
+              @compositionstart="handleCompositionStart"
+              @compositionend="handleCompositionEnd(field.key, $event)"
+              @input="handleTextInput(field.key, $event)"
               :placeholder="field.placeholder"
               class="form-input"
             />
