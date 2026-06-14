@@ -25,9 +25,11 @@ const updateField = (field: keyof PromptFormData, value: string) => {
   promptStore.updateField(field, value)
 }
 
-const getFieldValue = (field: keyof PromptFormData) => {
-  return promptStore.formData[field]
-}
+// ⚡ Bolt Optimization: Replace method call with direct property binding
+// Using method calls like `getFieldValue(field.key)` in Vue templates causes
+// the function to be re-evaluated on every render cycle (e.g., every keystroke).
+// By directly binding to `promptStore.formData[field.key]`, we allow Vue's compiler
+// to statically analyze the dependency and prevent unnecessary function execution.
 
 // フィールドをグループ別に分類
 const groupedFields = computed(() => {
@@ -76,7 +78,7 @@ const autoResize = (event: Event) => {
 
             <textarea
               v-if="field.type === 'textarea'"
-              :value="getFieldValue(field.key)"
+              :value="promptStore.formData[field.key]"
               @input="
                 (e) => {
                   updateField(field.key, (e.target as HTMLTextAreaElement).value)
@@ -92,7 +94,7 @@ const autoResize = (event: Event) => {
             <input
               v-else
               type="text"
-              :value="getFieldValue(field.key)"
+              :value="promptStore.formData[field.key]"
               @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
               :placeholder="field.placeholder"
               class="form-input"
