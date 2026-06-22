@@ -4,3 +4,6 @@
 ## 2025-04-15 - Unnecessary reactivity in static components
 **Learning:** In Vue 3, computing static arrays that never change wastes reactivity overhead. `computed` is useful for tracking reactive dependency changes, but using it with static data imports from a router file only adds overhead without any benefit. Also, typing must strictly be updated whenever an interface expects newly referenced props (e.g. `title`, `icon`).
 **Action:** Replace `computed` functions with simple variable assignments (e.g., `const tabs = promptRoutes.map(...)`) when dealing with statically configured values that do not rely on reactive Vue state.
+## 2025-05-18 - Method calls in Vue templates hinder performance
+**Learning:** In Vue 3, binding values in templates using method calls (e.g., `:value="getFieldValue(field.key)"`) forces the function to be evaluated on every render cycle. This is especially problematic in form components where typing triggers rapid re-renders, causing unnecessary computational overhead.
+**Action:** Always prefer direct property access (e.g., `:value="store.formData[field.key]"`) over method calls for simple state bindings in templates. This allows Vue's compiler to statically analyze dependencies and only re-render when the specific reactive property changes.
