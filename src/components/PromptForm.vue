@@ -21,12 +21,12 @@ interface Props {
 const props = defineProps<Props>()
 const promptStore = usePromptStore()
 
+// ⚡ Bolt Optimization: Use direct property binding instead of method calls in templates
+// Replaced `:value="getFieldValue(field.key)"` with `:value="promptStore.formData[field.key]"`
+// This allows Vue's compiler to statically analyze dependencies and prevents unnecessary
+// function execution on every render cycle (e.g., during form typing).
 const updateField = (field: keyof PromptFormData, value: string) => {
   promptStore.updateField(field, value)
-}
-
-const getFieldValue = (field: keyof PromptFormData) => {
-  return promptStore.formData[field]
 }
 
 // フィールドをグループ別に分類
@@ -76,7 +76,7 @@ const autoResize = (event: Event) => {
 
             <textarea
               v-if="field.type === 'textarea'"
-              :value="getFieldValue(field.key)"
+              :value="promptStore.formData[field.key]"
               @input="
                 (e) => {
                   updateField(field.key, (e.target as HTMLTextAreaElement).value)
@@ -92,7 +92,7 @@ const autoResize = (event: Event) => {
             <input
               v-else
               type="text"
-              :value="getFieldValue(field.key)"
+              :value="promptStore.formData[field.key]"
               @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
               :placeholder="field.placeholder"
               class="form-input"
