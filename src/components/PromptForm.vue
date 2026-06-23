@@ -25,9 +25,7 @@ const updateField = (field: keyof PromptFormData, value: string) => {
   promptStore.updateField(field, value)
 }
 
-const getFieldValue = (field: keyof PromptFormData) => {
-  return promptStore.formData[field]
-}
+// ⚡ Bolt Optimization: Removed getFieldValue method to avoid function calls in template, directly using promptStore.formData to allow Vue's compiler to statically analyze dependencies.
 
 // フィールドをグループ別に分類
 const groupedFields = computed(() => {
@@ -74,9 +72,10 @@ const autoResize = (event: Event) => {
               <span v-if="field.required" class="required-indicator">*</span>
             </label>
 
+            <!-- ⚡ Bolt: Direct property binding avoids function call on every render -->
             <textarea
               v-if="field.type === 'textarea'"
-              :value="getFieldValue(field.key)"
+              :value="promptStore.formData[field.key]"
               @input="
                 (e) => {
                   updateField(field.key, (e.target as HTMLTextAreaElement).value)
@@ -89,10 +88,11 @@ const autoResize = (event: Event) => {
               rows="3"
             />
 
+            <!-- ⚡ Bolt: Direct property binding avoids function call on every render -->
             <input
               v-else
               type="text"
-              :value="getFieldValue(field.key)"
+              :value="promptStore.formData[field.key]"
               @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
               :placeholder="field.placeholder"
               class="form-input"
