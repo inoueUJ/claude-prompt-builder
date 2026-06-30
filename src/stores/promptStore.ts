@@ -209,7 +209,9 @@ export const usePromptStore = defineStore('prompt', () => {
 
   // Getters
   const generatedPrompt = computed(() => {
-    let prompt = ''
+    // ⚡ Bolt Optimization: Use array.push() and join() instead of continuous += concatenation
+    // in reactive computed properties to improve memory efficiency and performance.
+    const promptParts: string[] = []
     const category = formData.value.category as CategoryKey
 
     // Constitutional AI原則に基づく出力順序
@@ -232,7 +234,7 @@ export const usePromptStore = defineStore('prompt', () => {
       const value = formData.value[field as keyof PromptFormData]
       if (value && value.trim()) {
         const content = value.trim()
-        prompt += `<${field}>\n${content}\n</${field}>\n\n`
+        promptParts.push(`<${field}>\n${content}\n</${field}>`)
       }
     })
 
@@ -240,10 +242,10 @@ export const usePromptStore = defineStore('prompt', () => {
     if (formData.value.specialization && formData.value.specialization.trim()) {
       const specializationTag = CATEGORY_SPECIALIZATION_TAGS[category]
       const content = formData.value.specialization.trim()
-      prompt += `<${specializationTag}>\n${content}\n</${specializationTag}>\n\n`
+      promptParts.push(`<${specializationTag}>\n${content}\n</${specializationTag}>`)
     }
 
-    return prompt.trim()
+    return promptParts.join('\n\n')
   })
 
   // 現在のカテゴリーで表示すべきフィールドを取得
