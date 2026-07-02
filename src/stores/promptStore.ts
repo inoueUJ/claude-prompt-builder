@@ -208,8 +208,12 @@ export const usePromptStore = defineStore('prompt', () => {
   })
 
   // Getters
+  // ⚡ Bolt Optimization: Replace continuous string concatenation with array join
+  // Since this computed property is evaluated on every keystroke, building a large
+  // string using `+=` causes unnecessary memory reallocation. Using an array and
+  // `.join('\n\n')` is more memory efficient and performs better.
   const generatedPrompt = computed(() => {
-    let prompt = ''
+    const parts: string[] = []
     const category = formData.value.category as CategoryKey
 
     // Constitutional AI原則に基づく出力順序
@@ -232,7 +236,7 @@ export const usePromptStore = defineStore('prompt', () => {
       const value = formData.value[field as keyof PromptFormData]
       if (value && value.trim()) {
         const content = value.trim()
-        prompt += `<${field}>\n${content}\n</${field}>\n\n`
+        parts.push(`<${field}>\n${content}\n</${field}>`)
       }
     })
 
@@ -240,10 +244,10 @@ export const usePromptStore = defineStore('prompt', () => {
     if (formData.value.specialization && formData.value.specialization.trim()) {
       const specializationTag = CATEGORY_SPECIALIZATION_TAGS[category]
       const content = formData.value.specialization.trim()
-      prompt += `<${specializationTag}>\n${content}\n</${specializationTag}>\n\n`
+      parts.push(`<${specializationTag}>\n${content}\n</${specializationTag}>`)
     }
 
-    return prompt.trim()
+    return parts.join('\n\n')
   })
 
   // 現在のカテゴリーで表示すべきフィールドを取得
