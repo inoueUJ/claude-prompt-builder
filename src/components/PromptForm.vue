@@ -45,10 +45,16 @@ const groupedFields = computed(() => {
 })
 
 // テキストエリアのサイズを自動調整
+// ⚡ Bolt Optimization: Fix layout thrashing with requestAnimationFrame
+// By wrapping DOM writes/reads in requestAnimationFrame, we allow the browser
+// to batch these updates, preventing synchronous layout calculations on every
+// keystroke which causes jank during fast typing.
 const autoResize = (event: Event) => {
   const textarea = event.target as HTMLTextAreaElement
-  textarea.style.height = 'auto'
-  textarea.style.height = textarea.scrollHeight + 'px'
+  requestAnimationFrame(() => {
+    textarea.style.height = 'auto'
+    textarea.style.height = textarea.scrollHeight + 'px'
+  })
 }
 </script>
 
