@@ -4,3 +4,7 @@
 ## 2025-04-15 - Unnecessary reactivity in static components
 **Learning:** In Vue 3, computing static arrays that never change wastes reactivity overhead. `computed` is useful for tracking reactive dependency changes, but using it with static data imports from a router file only adds overhead without any benefit. Also, typing must strictly be updated whenever an interface expects newly referenced props (e.g. `title`, `icon`).
 **Action:** Replace `computed` functions with simple variable assignments (e.g., `const tabs = promptRoutes.map(...)`) when dealing with statically configured values that do not rely on reactive Vue state.
+
+## 2026-07-03 - Layout thrashing in textareas
+**Learning:** Setting `style.height` (DOM write) and immediately reading `scrollHeight` (DOM read) synchronously in an event handler (like on every keystroke) forces the browser to recalculate layout, causing severe layout thrashing.
+**Action:** Wrap such read/write DOM manipulations inside a `requestAnimationFrame` callback to batch the layout updates to the next frame and avoid synchronous reflows.
