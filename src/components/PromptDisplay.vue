@@ -13,7 +13,19 @@ const promptQualityScore = computed(() => {
   const prompt = promptStore.generatedPrompt
   if (!prompt) return 0
 
-  const tagCount = prompt.split('\n').filter((line) => line.includes('<')).length
+  // ⚡ Bolt Optimization: O(N) allocation-free string parsing
+  // Replaced prompt.split('\n').filter(...) with a direct string scan.
+  // This eliminates two array allocations and their associated garbage collection overhead,
+  // significantly improving performance for large generated prompts.
+  let tagCount = 0
+  let searchIndex = 0
+  while (searchIndex < prompt.length) {
+    const nextTagIndex = prompt.indexOf('<', searchIndex)
+    if (nextTagIndex === -1) break
+    tagCount++
+    const nextNewline = prompt.indexOf('\n', nextTagIndex)
+    searchIndex = nextNewline === -1 ? prompt.length : nextNewline + 1
+  }
   return Math.min(5, Math.floor(tagCount / 2))
 })
 
