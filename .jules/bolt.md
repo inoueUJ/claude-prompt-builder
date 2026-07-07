@@ -4,3 +4,6 @@
 ## 2025-04-15 - Unnecessary reactivity in static components
 **Learning:** In Vue 3, computing static arrays that never change wastes reactivity overhead. `computed` is useful for tracking reactive dependency changes, but using it with static data imports from a router file only adds overhead without any benefit. Also, typing must strictly be updated whenever an interface expects newly referenced props (e.g. `title`, `icon`).
 **Action:** Replace `computed` functions with simple variable assignments (e.g., `const tabs = promptRoutes.map(...)`) when dealing with statically configured values that do not rely on reactive Vue state.
+## 2025-07-07 - Avoid unnecessary array allocations in string parsing
+**Learning:** Using `split('\n').filter(...)` creates multiple intermediate arrays, causing significant garbage collection overhead and potential O(N^2) regressions for large strings. A direct string scanning `while` loop using `indexOf` avoids memory allocation entirely and guarantees O(N) performance.
+**Action:** Replace functional array methods on strings with allocation-free loops when scanning for characters or substrings in performance-sensitive contexts.
